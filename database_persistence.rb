@@ -3,13 +3,11 @@ require 'yaml'
 
 # FIXME: Add oven_temp and cook_time to database
 class DatabasePersistence
-  def initialize(logger)
+  def initialize(logger = nil)
     @db = if Sinatra::Base.production?
             PG.connect(ENV['DATABASE_URL'])
-          # elsif Sinatra::Base.test?
-          #   conn = PG.connect(dbname: 'postgres')
-          #   conn.exec('CREATE DATABASE recipe_manager_test TEMPLATE = recipe_manager')
-          #   PG.connect(dbname: 'recipe_manager_test')
+          elsif Sinatra::Base.test?
+            PG.connect(dbname: 'recipe_manager_clean')
           else
             PG.connect(dbname: 'recipe_manager')
           end
@@ -21,7 +19,11 @@ class DatabasePersistence
   end
 
   def query(statement, *params)
-    @logger.info "#{statement}: #{params}"
+    @logger.info "#{statement}: #{params}" if @logger
+
+    # Quiet the numerous outputs from psql when testing
+    @db.exec_params("SET client_min_messages = 'ERROR'") if Sinatra::Base.test?
+
     @db.exec_params(statement, params)
   end
 
