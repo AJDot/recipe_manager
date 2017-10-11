@@ -1,0 +1,130 @@
+<form action="/recipe/<%= @full_recipe[:recipe_id] %>/save_image" method="post" enctype="multipart/form-data">
+  <input type="file" name="file" />
+  <input type="submit" value="Upload Image" />
+</form>
+<article class="recipe">
+  <header>
+    <% if @full_recipe[:img_filename] %>
+      <img src="../images/<%= @full_recipe[:img_filename] %>" alt="<%= @full_recipe[:name] %>" />
+    <% else %>
+      <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
+    <% end %>
+    <h1><%= @full_recipe[:name] %></h1>
+    <ul class="ethnicities">
+      <% @full_recipe[:ethnicities].each do |eth| %>
+        <li><%= eth[:name] %></li>
+      <% end %>
+    </ul>
+    <ul class="categories">
+      <% @full_recipe[:categories].each do |cat| %>
+        <li><%= cat[:name] %></li>
+      <% end %>
+    </ul>
+    <% if @full_recipe[:description] != 'No description provided' %>
+      <p><%= @full_recipe[:description] %></p>
+    <% end %>
+  </header>
+  <section>
+    <h2>Ingredients</h2>
+    <ul class="ingredients">
+      <% @full_recipe[:ingredients].each do |ing| %>
+        <li><%= ing[:description] %></li>
+      <% end %>
+    </ul>
+  </section>
+  <section>
+    <h2>Directions</h2>
+    <ol class="steps">
+      <% @full_recipe[:steps].each do |step| %>
+        <li><%= step[:description] %></li>
+      <% end %>
+    </ol>
+  </section>
+  <section>
+    <h2>Notes</h2>
+    <ul class="notes">
+      <% @full_recipe[:notes].each do |note| %>
+        <li><%= note[:description] %></li>
+      <% end %>
+    </ul>
+  </section>
+</article>
+
+
+
+
+
+
+
+<h2><%= @full_recipe[:name] %></h2>
+<dl>
+  <dd>Recipe ID: <%= @full_recipe[:recipe_id] %></dd>
+  <dd>Description: <%= @full_recipe[:description] %></dd>
+</dl>
+
+<h2>Ingredients</h2>
+<ul>
+  <% @full_recipe[:ingredients].each do |ingredient| %>
+    <li>
+      Description: <%= ingredient[:description] %>
+      <ul>
+        <li>Recipe ID: <%= ingredient[:recipe_id] %></li>
+        <li>Ingredient Number: <%= ingredient[:ing_number] %></li>
+        <li>Complete: <%= ingredient[:complete] %></li>
+      </ul>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Categories</h2>
+<ul>
+  <% @full_recipe[:categories].each do |category| %>
+    <li>
+      Name: <%= category[:name] %>
+      <ul>
+        <li>Recipe ID: <%= category[:recipe_id] %></li>
+        <li>Category ID: <%= category[:category_id] %></li>
+      </ul>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Ethnicities</h2>
+<ul>
+  <% @full_recipe[:ethnicities].each do |ethnicity| %>
+    <li>
+      Name: <%= ethnicity[:name] %>
+      <ul>
+        <li>Recipe ID: <%= ethnicity[:recipe_id] %></li>
+        <li>Ethnicity ID: <%= ethnicity[:ethnicity_id] %></li>
+      </ul>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Steps</h2>
+<ul>
+  <% @full_recipe[:steps].each do |step| %>
+    <li>
+      Step Number: <%= step[:step_number] %>
+      <ul>
+        <li>Recipe ID: <%= step[:recipe_id] %></li>
+        <li>Description: <%= step[:description] %></li>
+        <li>Complete: <%= step[:complete] %></li>
+      </ul>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Notes</h2>
+<ul>
+  <% @full_recipe[:notes].each do |note| %>
+    <li>
+      Note Number: <%= note[:note_number] %>
+      <ul>
+        <li>Recipe ID: <%= note[:recipe_id] %></li>
+        <li>Description: <%= note[:description] %></li>
+      </ul>
+    </li>
+  <% end %>
+</ul>
