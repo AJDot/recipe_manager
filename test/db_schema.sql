@@ -14,39 +14,31 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: recipe_manager_clean; Type: DATABASE; Schema: -; Owner: ajdot
---
-
-CREATE DATABASE recipe_manager_clean WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
-
-
-ALTER DATABASE recipe_manager_clean OWNER TO ajdot;
-
-\connect recipe_manager_clean
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
+
+--
+-- Name: execute(text); Type: FUNCTION; Schema: public; Owner: ajdot
+--
+
+CREATE FUNCTION execute(text) RETURNS void
+    LANGUAGE plpgsql
+    AS $_$BEGIN execute $1; END;$_$;
+
+
+ALTER FUNCTION public.execute(text) OWNER TO ajdot;
 
 SET default_tablespace = '';
 
@@ -256,6 +248,99 @@ ALTER TABLE ONLY recipes ALTER COLUMN id SET DEFAULT nextval('recipes_id_seq'::r
 
 
 --
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY categories (id, name) FROM stdin;
+\.
+
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ajdot
+--
+
+SELECT pg_catalog.setval('categories_id_seq', 1, false);
+
+
+--
+-- Data for Name: ethnicities; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY ethnicities (id, name) FROM stdin;
+\.
+
+
+--
+-- Name: ethnicities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ajdot
+--
+
+SELECT pg_catalog.setval('ethnicities_id_seq', 1, false);
+
+
+--
+-- Data for Name: images; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY images (recipe_id, img_number, img_filename) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ingredients; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY ingredients (recipe_id, ing_number, description, complete) FROM stdin;
+\.
+
+
+--
+-- Data for Name: notes; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY notes (recipe_id, note_number, description) FROM stdin;
+\.
+
+
+--
+-- Data for Name: recipes; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY recipes (id, name, description) FROM stdin;
+\.
+
+
+--
+-- Data for Name: recipes_categories; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY recipes_categories (recipe_id, category_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: recipes_ethnicities; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY recipes_ethnicities (recipe_id, ethnicity_id) FROM stdin;
+\.
+
+
+--
+-- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ajdot
+--
+
+SELECT pg_catalog.setval('recipes_id_seq', 2, true);
+
+
+--
+-- Data for Name: steps; Type: TABLE DATA; Schema: public; Owner: ajdot
+--
+
+COPY steps (recipe_id, step_number, description, complete) FROM stdin;
+\.
+
+
+--
 -- Name: categories_pkey; Type: CONSTRAINT; Schema: public; Owner: ajdot
 --
 
@@ -404,3 +489,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+

@@ -22,7 +22,7 @@ class DatabasePersistence
     @logger.info "#{statement}: #{params}" if @logger
 
     # Quiet the numerous outputs from psql when testing
-    @db.exec_params("SET client_min_messages = 'ERROR'") if Sinatra::Base.test?
+    @db.exec_params("SET client_min_messages = ERROR") if Sinatra::Base.test?
 
     @db.exec_params(statement, params)
   end
@@ -42,7 +42,10 @@ class DatabasePersistence
   end
 
   def full_recipe(recipe_id)
+    recipe = recipe(recipe_id)
     {
+      name: recipe[:name],
+      description: recipe[:description],
       ingredients: recipe_ingredients(recipe_id),
       categories: recipe_categories(recipe_id),
       ethnicities: recipe_ethnicities(recipe_id),
@@ -84,6 +87,16 @@ class DatabasePersistence
     if data.key?(:notes)
       add_notes_to_recipe(recipe_id, *data[:notes])
     end
+  end
+
+  def find_recipe_id(recipe_name)
+    sql = <<~SQL
+      SELECT * FROM recipes
+      WHERE name = $1
+      LIMIT 1
+    SQL
+
+    query(sql, recipe_name)[0]['id'].to_i
   end
 
   # INGREDIENTS
@@ -143,6 +156,16 @@ class DatabasePersistence
     SQL
 
     query(sql, recipe_id, ing_id)
+  end
+
+  def find_ingredient_id(ing_data)
+    sql = <<~SQL
+      SELECT * FROM ingredients
+      WHERE description = $1
+      LIMIT 1
+    SQL
+
+    query(sql, ing_data)[0]['id'].to_i
   end
 
   # FOR DATABASE VERSION 1
@@ -266,6 +289,16 @@ class DatabasePersistence
     query('DELETE FROM categories WHERE id = $1', cat_id)
   end
 
+  def find_category_id(cat_name)
+    sql = <<~SQL
+      SELECT * FROM categories
+      WHERE name = $1
+      LIMIT 1
+    SQL
+
+    query(sql, cat_name)[0]['id'].to_i
+  end
+
   # ETHNICITIES
 
   def recipe_ethnicities(recipe_id)
@@ -314,6 +347,16 @@ class DatabasePersistence
   def destroy_ethnicity(eth_id)
     return unless ethnicity_exists?(id: eth_id)
     query('DELETE FROM ethnicities WHERE id = $1', eth_id)
+  end
+
+  def find_ethnicity_id(eth_name)
+    sql = <<~SQL
+      SELECT * FROM ethnicities
+      WHERE name = $1
+      LIMIT 1
+    SQL
+
+    query(sql, eth_name)[0]['id'].to_i
   end
 
   # STEPS
@@ -502,16 +545,6 @@ class DatabasePersistence
     !query(sql, recipe_name).ntuples.zero?
   end
 
-  def find_recipe_id(recipe_name)
-    sql = <<~SQL
-      SELECT * FROM recipes
-      WHERE name = $1
-      LIMIT 1
-    SQL
-
-    query(sql, recipe_name)[0]['id'].to_i
-  end
-
   def tuple_to_hash_recipe(tuple)
     {
       recipe_id: tuple['id'].to_i,
@@ -599,16 +632,6 @@ class DatabasePersistence
     !query(sql, value).ntuples.zero?
   end
 
-  def find_category_id(cat_name)
-    sql = <<~SQL
-      SELECT * FROM categories
-      WHERE name = $1
-      LIMIT 1
-    SQL
-
-    query(sql, cat_name)[0]['id'].to_i
-  end
-
   def recipe_category_exist?(recipe_id, cat_id)
     sql = <<~SQL
       SELECT * FROM recipes_categories
@@ -655,16 +678,6 @@ class DatabasePersistence
     SQL
 
     !query(sql, value).ntuples.zero?
-  end
-
-  def find_ethnicity_id(eth_name)
-    sql = <<~SQL
-      SELECT * FROM ethnicities
-      WHERE name = $1
-      LIMIT 1
-    SQL
-
-    query(sql, eth_name)[0]['id'].to_i
   end
 
   def recipe_ethnicity_exist?(recipe_id, eth_id)

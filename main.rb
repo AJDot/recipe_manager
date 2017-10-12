@@ -41,7 +41,6 @@ end
 
 # Display recipe cards
 get '/' do
-  @recipes = @storage.recipes
 
   # new_recipe = {
   #   name: 'Angel Chicken',
@@ -76,6 +75,7 @@ get '/' do
 
   # @storage.yaml_to_database(*recipe_paths)
 
+  @recipes = @storage.recipes
   all_categories = @storage.all_recipe_categories
   all_images = @storage.all_recipe_images
 
