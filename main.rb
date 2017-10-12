@@ -109,7 +109,7 @@ post '/recipe/:recipe_id/save_image' do
     f.write(file.read)
   end
 
-  @storage.add_image_to_recipe(recipe_id, filename)
+  @storage.update_recipe_image(recipe_id, filename)
 
   redirect "/recipe/#{recipe_id}"
 end

@@ -52,7 +52,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
     test_cat_name = 'Category 1'
-    @storage.add_categories_to_recipe(recipe_id, test_cat_name)
+    @storage.add_recipe_categories(recipe_id, test_cat_name)
 
     get '/'
 
@@ -73,7 +73,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
     test_cat_name = 'Category 1'
-    @storage.add_categories_to_recipe(recipe_id, test_cat_name)
+    @storage.add_recipe_categories(recipe_id, test_cat_name)
 
     # Display recipe details
     get "/recipe/#{recipe_id}"
@@ -93,7 +93,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
     test_ing_info = '1 cup Ingredient 1'
-    @storage.add_ingredients_to_recipe(recipe_id, test_ing_info)
+    @storage.add_recipe_ingredients(recipe_id, test_ing_info)
 
     # Display recipe details
     get "/recipe/#{recipe_id}"
@@ -113,7 +113,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
     test_eth = 'Ethnicity 1'
-    @storage.add_ethnicities_to_recipe(recipe_id, test_eth)
+    @storage.add_recipe_ethnicities(recipe_id, test_eth)
 
     # Display recipe details
     get "/recipe/#{recipe_id}"
@@ -133,7 +133,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
     test_step = 'Step 1'
-    @storage.add_steps_to_recipe(recipe_id, test_step)
+    @storage.add_recipe_steps(recipe_id, test_step)
 
     # Display recipe details
     get "/recipe/#{recipe_id}"
@@ -153,7 +153,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
     test_note = 'Note 1'
-    @storage.add_notes_to_recipe(recipe_id, test_note)
+    @storage.add_recipe_notes(recipe_id, test_note)
 
     # Display recipe details
     get "/recipe/#{recipe_id}"
@@ -162,5 +162,25 @@ class RecipeManagerTest < Minitest::Test
     assert_includes last_response.body, recipe_data[:name]
     assert_includes last_response.body, recipe_data[:description]
     assert_includes last_response.body, test_note
+  end
+
+  def test_view_recipe_detail_image
+    recipe_data = {
+      name: 'Test Recipe 1',
+      description: 'Test recipe description 1'
+    }
+    @storage.create_recipe(recipe_data)
+    recipe_id = @storage.find_recipe_id(recipe_data[:name])
+
+    test_image_filename = 'test_image.jpg'
+    @storage.update_recipe_image(recipe_id, test_image_filename)
+
+    # Display recipe details
+    get "/recipe/#{recipe_id}"
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, recipe_data[:name]
+    assert_includes last_response.body, recipe_data[:description]
+    assert_includes last_response.body, test_image_filename
   end
 end

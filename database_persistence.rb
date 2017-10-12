@@ -31,14 +31,14 @@ class DatabasePersistence
     sql = 'SELECT * FROM recipes'
     result = query(sql)
     result.map do |tuple|
-      tuple_to_hash_recipe(tuple)
+      recipe_tuple_to_hash(tuple)
     end
   end
 
   def recipe(recipe_id)
     sql = 'SELECT * FROM recipes WHERE id = $1'
     result = query(sql, recipe_id)
-    tuple_to_hash_recipe(result[0])
+    recipe_tuple_to_hash(result[0])
   end
 
   def full_recipe(recipe_id)
@@ -69,23 +69,23 @@ class DatabasePersistence
     recipe_id = find_recipe_id(data[:name])
 
     if data.key?(:categories)
-      add_categories_to_recipe(recipe_id, *data[:categories])
+      add_recipe_categories(recipe_id, *data[:categories])
     end
 
     if data.key?(:ethnicities)
-      add_ethnicities_to_recipe(recipe_id, *data[:ethnicities])
+      add_recipe_ethnicities(recipe_id, *data[:ethnicities])
     end
 
     if data.key?(:ingredients)
-      add_ingredients_to_recipe(recipe_id, *data[:ingredients])
+      add_recipe_ingredients(recipe_id, *data[:ingredients])
     end
 
     if data.key?(:steps)
-      add_steps_to_recipe(recipe_id, *data[:steps])
+      add_recipe_steps(recipe_id, *data[:steps])
     end
 
     if data.key?(:notes)
-      add_notes_to_recipe(recipe_id, *data[:notes])
+      add_recipe_notes(recipe_id, *data[:notes])
     end
   end
 
@@ -112,11 +112,11 @@ class DatabasePersistence
 
     result = query(sql, recipe_id)
     result.map do |tuple|
-      tuple_to_hash_ingredient(tuple)
+      ingredient_tuple_to_hash(tuple)
     end
   end
 
-  def add_ingredients_to_recipe(recipe_id, *ings)
+  def add_recipe_ingredients(recipe_id, *ings)
     sql = <<~SQL
       SELECT ing_number FROM ingredients
       WHERE recipe_id = $1
@@ -140,7 +140,7 @@ class DatabasePersistence
     query(sql_insert, *values)
   end
 
-  def remove_ingredient_from_recipe(recipe_id, ing_id)
+  def remove_recipe_ingredient(recipe_id, ing_id)
     sql = <<~SQL
       DELETE FROM recipes_ingredients
       WHERE (recipe_id, ingredient_id) = ($1, $2)
@@ -180,11 +180,11 @@ class DatabasePersistence
   #
   #   result = query(sql, recipe_id)
   #   result.map do |tuple|
-  #     tuple_to_hash_ingredient(tuple)
+  #     ingredient_tuple_to_hash(tuple)
   #   end
   # end
   #
-  # def add_ingredients_to_recipe(recipe_id, *ings)
+  # def add_recipe_ingredients(recipe_id, *ings)
   #   # add ingredient to database if it does not exist
   #   ing_names = ings.map { |ing| ing[:name] }
   #   add_ingredients(*ing_names)
@@ -213,7 +213,7 @@ class DatabasePersistence
   #   query(sql_insert, *values)
   # end
   #
-  # def remove_ingredient_from_recipe(recipe_id, ing_id)
+  # def remove_recipe_ingredient(recipe_id, ing_id)
   #   sql = <<~SQL
   #     DELETE FROM recipes_ingredients
   #     WHERE (recipe_id, ingredient_id) = ($1, $2)
@@ -238,7 +238,7 @@ class DatabasePersistence
 
     result = query(sql, recipe_id)
     result.map do |tuple|
-      tuple_to_hash_category(tuple)
+      category_tuple_to_hash(tuple)
     end
   end
 
@@ -250,11 +250,11 @@ class DatabasePersistence
 
     result = query(sql)
     result.map do |tuple|
-      tuple_to_hash_category(tuple)
+      category_tuple_to_hash(tuple)
     end
   end
 
-  def add_categories_to_recipe(recipe_id, *cat_names)
+  def add_recipe_categories(recipe_id, *cat_names)
     # add category to database if it does not exist
     add_categories(*cat_names)
 
@@ -275,7 +275,7 @@ class DatabasePersistence
     query(sql_insert, *values)
   end
 
-  def remove_category_from_recipe(recipe_id, cat_id)
+  def remove_recipe_category(recipe_id, cat_id)
     sql = <<~SQL
       DELETE FROM recipes_categories
       WHERE (recipe_id, category_id) = ($1, $2)
@@ -310,11 +310,11 @@ class DatabasePersistence
 
     result = query(sql, recipe_id)
     result.map do |tuple|
-      tuple_to_hash_ethnicity(tuple)
+      ethnicity_tuple_to_hash(tuple)
     end
   end
 
-  def add_ethnicities_to_recipe(recipe_id, *eth_names)
+  def add_recipe_ethnicities(recipe_id, *eth_names)
     # add ethnicity to database if it does not exist
     add_ethnicities(*eth_names)
 
@@ -335,7 +335,7 @@ class DatabasePersistence
     query(sql_insert, *values)
   end
 
-  def remove_ethnicity_from_recipe(recipe_id, eth_id)
+  def remove_recipe_ethnicity(recipe_id, eth_id)
     sql = <<~SQL
       DELETE FROM recipes_ethnicities
       WHERE (recipe_id, ethnicity_id) = ($1, $2)
@@ -369,11 +369,11 @@ class DatabasePersistence
 
     result = query(sql, recipe_id)
     result.map do |tuple|
-      tuple_to_hash_step(tuple)
+      step_tuple_to_hash(tuple)
     end
   end
 
-  def add_steps_to_recipe(recipe_id, *steps)
+  def add_recipe_steps(recipe_id, *steps)
     sql = <<~SQL
       SELECT step_number FROM steps
       WHERE recipe_id = $1
@@ -415,17 +415,15 @@ class DatabasePersistence
 
     result = query(sql, recipe_id)
     result.map do |tuple|
-      tuple_to_hash_note(tuple)
+      note_tuple_to_hash(tuple)
     end
   end
 
-  def add_notes_to_recipe(recipe_id, *notes)
+  def add_recipe_notes(recipe_id, *notes)
     return if notes.empty?
     sql = <<~SQL
-      SELECT note_number FROM notes
-      WHERE recipe_id = $1
-      ORDER BY note_number DESC
-      LIMIT 1
+      SELECT note_number FROM notes WHERE recipe_id = $1
+      ORDER BY note_number DESC LIMIT 1
     SQL
 
     result = query(sql, recipe_id)
@@ -475,36 +473,42 @@ class DatabasePersistence
 
     result = query(sql)
     result.map do |tuple|
-      tuple_to_hash_image(tuple)
+      image_tuple_to_hash(tuple)
     end
   end
 
-  def add_image_to_recipe(recipe_id, filename)
+  def update_recipe_image(recipe_id, filename)
     sql = <<~SQL
-      SELECT img_filename FROM images
-      WHERE recipe_id = $1
-      ORDER BY img_number DESC
-      LIMIT 1
+      SELECT img_filename FROM images WHERE recipe_id = $1
+      ORDER BY img_number DESC LIMIT 1
     SQL
 
     result = query(sql, recipe_id)
     if result.values.empty?
-      sql_insert = <<~SQL
-        INSERT INTO images (recipe_id, img_number, img_filename) VALUES
-          ($1, $2, $3)
-      SQL
-      query(sql_insert, recipe_id, 1, filename)
+      add_recipe_image(recipe_id, filename)
     else
-      sql_update = <<~SQL
-        UPDATE images
-        SET img_filename = $1
-        WHERE recipe_id = $2
-      SQL
-
-      query(sql_update, filename, recipe_id)
+      modify_recipe_image(recipe_id, filename)
     end
-
   end
+
+  def add_recipe_image(recipe_id, filename)
+    sql_insert = <<~SQL
+      INSERT INTO images (recipe_id, img_number, img_filename) VALUES
+        ($1, $2, $3)
+    SQL
+    query(sql_insert, recipe_id, 1, filename)
+  end
+
+  def modify_recipe_image(recipe_id, filename)
+    sql_update = <<~SQL
+      UPDATE images
+      SET img_filename = $1
+      WHERE recipe_id = $2
+    SQL
+
+    query(sql_update, filename, recipe_id)
+  end
+
 
   # GENERAL
 
@@ -528,9 +532,10 @@ class DatabasePersistence
     end
   end
 
-
   ###########################
+
   private
+
   ###########################
 
   # RECIPES
@@ -545,7 +550,7 @@ class DatabasePersistence
     !query(sql, recipe_name).ntuples.zero?
   end
 
-  def tuple_to_hash_recipe(tuple)
+  def recipe_tuple_to_hash(tuple)
     {
       recipe_id: tuple['id'].to_i,
       name: tuple['name'],
@@ -603,7 +608,7 @@ class DatabasePersistence
   #   query(sql, *ing_names)
   # end
 
-  def tuple_to_hash_ingredient(tuple)
+  def ingredient_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
       ing_number: tuple['ing_number'].to_i,
@@ -652,7 +657,7 @@ class DatabasePersistence
     query(sql, *cat_names)
   end
 
-  def tuple_to_hash_category(tuple)
+  def category_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
       category_id: tuple['category_id'].to_i,
@@ -706,7 +711,7 @@ class DatabasePersistence
     query(sql, *eth_names)
   end
 
-  def tuple_to_hash_ethnicity(tuple)
+  def ethnicity_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
       ethnicity_id: tuple['ethnicity_id'].to_i,
@@ -716,7 +721,7 @@ class DatabasePersistence
 
   # STEPS
 
-  def tuple_to_hash_step(tuple)
+  def step_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
       step_number: tuple['step_number'].to_i,
@@ -727,7 +732,7 @@ class DatabasePersistence
 
   # NOTES
 
-  def tuple_to_hash_note(tuple)
+  def note_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
       note_number: tuple['note_number'].to_i,
@@ -737,7 +742,7 @@ class DatabasePersistence
 
   # IMAGES
 
-  def tuple_to_hash_image(tuple)
+  def image_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
       img_number: tuple['img_number'].to_i,
