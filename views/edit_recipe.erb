@@ -1,15 +1,23 @@
+<!-- <p>
+  <%= @full_recipe %>
+</p> -->
 <form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data">
-  <h2>Edit Recipe: Polenta Bake with Shrimp</h2>
+  <h2>Edit Recipe: <%= @full_recipe[:name] %></h2>
   <input class="btn" type="submit" value="Update Recipe" />
-  <dl class="title">
-    <dt><label for="title">Title</label></dt>
+  <dl class="name">
+    <dt><label for="name">Name</label></dt>
     <dd>
-      <input type="text" name="title" id="title" value="Polenta Bake with Shrimp" />
+      <input type="text" name="name" id="name" value="<%= @full_recipe[:name] %>" />
     </dd>
   </dl>
   <dl class="image">
     <dt>
-      <img src="https://cdn-image.realsimple.com/sites/default/files/styles/portrait_435x518/public/1473198246/shrimp-polenta-bake.jpg?itok=9EKRPw1o" alt="Polenta Bake with Shrimp"/>
+      <% if @full_recipe[:img_filename] %>
+        <img src="/images/<%= @full_recipe[:img_filename] %>" alt="<%= @full_recipe[:name] %>" />
+      <% else %>
+        <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='#' />
+      <% end %>
+      <input type="hidden" name="current_image" value="<%= @full_recipe[:img_filename] %>" />
     </dt>
     <dd>
       <label class="choose-file btn">
@@ -18,57 +26,52 @@
       </label>
     </dd>
   </dl>
-
+  <dl>
+    <dt><label for="description">Description</label></dt>
+    <dd>
+      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%==
+        @full_recipe[:description]
+      %></textarea>
+    </dd>
+  </dl>
   <dl>
     <dt><label for="ethnicities">Ethnicities</label></dt>
     <dd>
-      <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line.">Italian
-Ethnicity 2
-Ethnicity 3
-Ethnicity 4
-Ethnicity 5</textarea>
+      <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
+        pluck_on_newlines(@full_recipe[:ethnicities], :name)
+      %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="categories">Categories</label></dt>
     <dd>
-      <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line.">Dinner
-Category 2
-Category 3
-Category 4
-Category 5</textarea>
+      <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
+        pluck_on_newlines(@full_recipe[:categories], :name)
+      %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="ingredients">Ingredients</label></dt>
     <dd>
-      <textarea name="ingredients" id="ingredients" cols=80 rows=10 placeholder="Put each ingredient on its own line.">2 cups whole milk
-2 cups water
-1 cup polenta
-3 oz Parmesan cheese, grated (about 0.75 cup)
-1/2 teaspoon black pepper
-2 oz butter, melted, unsalted
-1 teaspoon kosher salt
-1 pound large raw shrimp, peeled and deveined
-1 cup cherry tomatoes, halved
-1/2 teaspoon paprika
-2 tablespoons scallions, sliced</textarea>
+      <textarea name="ingredients" id="ingredients" cols=80 rows=10 placeholder="Put each ingredient on its own line."><%==
+        pluck_on_newlines(@full_recipe[:ingredients], :description)
+      %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="steps">Directions</label></dt>
     <dd>
-      <textarea name="steps" id="steps" cols=80 rows=10 placeholder="Put each step on its own line.">Preheat broiler with oven rack 6 inches from heat. Bring the milk and water to a simmer in a 12-inch ovenproof nonstick skillet. Reduce heat to medium; whisk in the polenta and cook, whisking occasionally, until thick and creamy, about 15 minutes. Stir in the Parmesan, pepper, 3 tablespoons of the melted butter, and ½ teaspoon of the salt.
-Toss together the shrimp, tomatoes, paprika, and the remaining butter and salt. Arrange in an even layer over the polenta. Broil until the shrimp are cooked through and just beginning to brown, 3 to 4 minutes. Top with the scallions.</textarea>
+      <textarea name="steps" id="steps" cols=80 rows=10 placeholder="Put each step on its own line."><%==
+        pluck_on_newlines(@full_recipe[:steps], :description)
+      %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="notes">Notes</label></dt>
     <dd>
-      <textarea name="notes" id="notes" cols=80 rows=10>Note #1
-Note #2
-Note #3
-Note #4</textarea>
+      <textarea name="notes" id="notes" cols=80 rows=10><%==
+        pluck_on_newlines(@full_recipe[:notes], :description)
+      %></textarea>
     </dd>
   </dl>
   <input class="btn" type="submit" value="Update Recipe" />

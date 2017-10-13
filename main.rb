@@ -42,6 +42,21 @@ def images_path
   File.expand_path("../public/images", __FILE__);
 end
 
+def save_image(filename, file_location)
+  file_destination = File.join(images_path, filename)
+  FileUtils.copy(file_location, file_destination)
+end
+
+helpers do
+  # Gather values of key from each hash in an array of hashes
+  def pluck(array, key)
+    array.map { |hash| hash[key] }
+  end
+
+  def pluck_on_newlines(array, key)
+    pluck(array, key).join('&#13;&#10;')
+  end
+end
 
 # Display recipe cards
 get '/' do
@@ -107,25 +122,35 @@ end
 
 get '/recipe/:recipe_id/edit' do
   @recipe_id = params[:recipe_id].to_i
+  @full_recipe = @storage.full_recipe(@recipe_id)
   erb :edit_recipe, layout: :layout
 end
 
 post '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
-  @full_recipe = @storage.full_recipe(@recipe_id)
-  image_file = params[:image][:tempfile] if params[:image]
+  new_image = params[:image] if params[:image]
 
-  @test = {
-    title: params[:title],
-    image: params[:image] || '',
+  @new_data = {
+    name: params[:name],
+    description: params[:description],
     ethnicities: params[:ethnicities].split(/\r?\n/),
     categories: params[:categories].split(/\r?\n/),
     ingredients: params[:ingredients].split(/\r?\n/),
     steps: params[:steps].split(/\r?\n/),
-    notes: params[:notes].split(/\r?\n/)
+    notes: params[:notes].split(/\r?\n/),
+    img_filename: (new_image ? new_image[:filename] : params[:current_image])
   }
-  erb :recipe
-  # redirect "/recipe/#{recipe_id}"
+
+  @storage.update_recipe(@recipe_id, @new_data)
+
+  if new_image
+    @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
+    save_image(new_image[:filename], new_image[:tempfile].path)
+  end
+
+  # @full_recipe = @storage.full_recipe(@recipe_id)
+  # erb :recipe
+  redirect "/recipe/#{@recipe_id}"
 end
 
 post '/recipe/:recipe_id/save_image' do

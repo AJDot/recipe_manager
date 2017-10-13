@@ -334,12 +334,12 @@ textarea:focus {
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, .1);
 }
 
-.title {
+.name {
   display: inline-block;
   width: 49%;
 }
 
-.title input {
+.name input {
   font: normal 36px 'Josefin Slab', serif;
 }
 
@@ -370,6 +370,11 @@ input[type="submit"] {
   object-fit: cover;
   border-radius: 1em;
 }
+
+.edit-recipe .img-placeholder {
+  object-fit: scale-down;
+}
+
 
 .choose-file {
   position: relative;

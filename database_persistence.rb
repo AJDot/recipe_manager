@@ -92,6 +92,26 @@ class DatabasePersistence
     end
   end
 
+  def update_recipe(recipe_id, data)
+    sql_update = <<~SQL
+      UPDATE recipes
+         SET name = $2, description = $3
+       WHERE id = $1
+    SQL
+
+    query(sql_update, recipe_id, data[:name], data[:description])
+
+    update_recipe_categories(recipe_id, data[:categories])
+
+    update_recipe_ethnicities(recipe_id, data[:ethnicities])
+
+    update_recipe_ingredients(recipe_id, data[:ingredients])
+
+    update_recipe_steps(recipe_id, data[:steps])
+
+    update_recipe_notes(recipe_id, data[:notes])
+  end
+
   def find_recipe_id(recipe_name)
     sql = <<~SQL
       SELECT * FROM recipes
@@ -139,26 +159,39 @@ class DatabasePersistence
     ing_numbers = (next_number...(next_number + ings.size)).to_a
     nums_descriptions = ing_numbers.zip(ings)
     values = [recipe_id].product(nums_descriptions).flatten
-
     query(sql_insert, *values)
   end
 
-  def remove_recipe_ingredient(recipe_id, ing_id)
-    sql = <<~SQL
-      DELETE FROM recipes_ingredients
-      WHERE (recipe_id, ingredient_id) = ($1, $2)
+  # def remove_recipe_ingredient(recipe_id, ing_id)
+  #   sql = <<~SQL
+  #     DELETE FROM recipes_ingredients
+  #     WHERE (recipe_id, ingredient_id) = ($1, $2)
+  #   SQL
+  #
+  #   query(sql, recipe_id, ing_id)
+  # end
+
+  # def destroy_ingredient(recipe_id, ing_id)
+  #   sql = <<~SQL
+  #     DELETE FROM ingredients
+  #     WHERE (recipe_id, ing_number) = ($1, $2)
+  #   SQL
+  #
+  #   query(sql, recipe_id, ing_id)
+  # end
+
+  def destroy_recipe_ingredients(recipe_id)
+    sql_delete = <<~SQL
+      DELETE FROM ingredients
+       WHERE recipe_id = $1
     SQL
 
-    query(sql, recipe_id, ing_id)
+    query(sql_delete, recipe_id)
   end
 
-  def destroy_ingredient(recipe_id, ing_id)
-    sql = <<~SQL
-      DELETE FROM ingredients
-      WHERE (recipe_id, ing_number) = ($1, $2)
-    SQL
-
-    query(sql, recipe_id, ing_id)
+  def update_recipe_ingredients(recipe_id, ings)
+    destroy_recipe_ingredients(recipe_id)
+    add_recipe_ingredients(recipe_id, *ings)
   end
 
   def find_ingredient_id(ing_data)
@@ -292,6 +325,20 @@ class DatabasePersistence
     query('DELETE FROM categories WHERE id = $1', cat_id)
   end
 
+  def destroy_recipe_categories(recipe_id)
+    sql_delete = <<~SQL
+      DELETE FROM recipes_categories
+       WHERE recipe_id = $1
+    SQL
+
+    query(sql_delete, recipe_id)
+  end
+
+  def update_recipe_categories(recipe_id, cats)
+    destroy_recipe_categories(recipe_id)
+    add_recipe_categories(recipe_id, *cats)
+  end
+
   def find_category_id(cat_name)
     sql = <<~SQL
       SELECT * FROM categories
@@ -352,6 +399,20 @@ class DatabasePersistence
     query('DELETE FROM ethnicities WHERE id = $1', eth_id)
   end
 
+  def destroy_recipe_ethnicities(recipe_id)
+    sql_delete = <<~SQL
+      DELETE FROM recipes_ethnicities
+       WHERE recipe_id = $1
+    SQL
+
+    query(sql_delete, recipe_id)
+  end
+
+  def update_recipe_ethnicities(recipe_id, eths)
+    destroy_recipe_ethnicities(recipe_id)
+    add_recipe_ethnicities(recipe_id, *eths)
+  end
+
   def find_ethnicity_id(eth_name)
     sql = <<~SQL
       SELECT * FROM ethnicities
@@ -408,6 +469,20 @@ class DatabasePersistence
     query(sql, recipe_id, step_number)
   end
 
+  def destroy_recipe_steps(recipe_id)
+    sql_delete = <<~SQL
+      DELETE FROM steps
+       WHERE recipe_id = $1
+    SQL
+
+    query(sql_delete, recipe_id)
+  end
+
+  def update_recipe_steps(recipe_id, steps)
+    destroy_recipe_steps(recipe_id)
+    add_recipe_steps(recipe_id, *steps)
+  end
+
   # NOTES
 
   def recipe_notes(recipe_id)
@@ -451,6 +526,20 @@ class DatabasePersistence
     SQL
 
     query(sql, recipe_id, note_number)
+  end
+
+  def destroy_recipe_notes(recipe_id)
+    sql_delete = <<~SQL
+      DELETE FROM notes
+       WHERE recipe_id = $1
+    SQL
+
+    query(sql_delete, recipe_id)
+  end
+
+  def update_recipe_notes(recipe_id, notes)
+    destroy_recipe_notes(recipe_id)
+    add_recipe_notes(recipe_id, *notes)
   end
 
   # IMAGES

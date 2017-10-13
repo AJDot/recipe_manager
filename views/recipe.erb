@@ -1,17 +1,18 @@
-<ul>
-  <% @test.each do |key, val| %>
+<!-- <ul>
+  <% @full_recipe.each do |key, val| %>
     <li><%= key %>: <%= val %></li>
   <% end %>
-</ul>
+</ul> -->
 
+<a href="/">Recipe Cards</a>
 <a href="/recipe/<%= @recipe_id %>/edit">Edit Recipe</a>
 
 <article class="recipe">
   <header>
     <% if @full_recipe[:img_filename] %>
-      <img src="../images/<%= @full_recipe[:img_filename] %>" alt="<%= @full_recipe[:name] %>" />
+      <img src="/images/<%= @full_recipe[:img_filename] %>" alt="<%= @full_recipe[:name] %>" />
     <% else %>
-      <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
+      <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='#' />
     <% end %>
     <h1><%= @full_recipe[:name] %></h1>
     <ul class="ethnicities">
@@ -55,12 +56,7 @@
 </article>
 
 
-
-
-
-
-
-<h2><%= @full_recipe[:name] %></h2>
+<!-- <h2><%= @full_recipe[:name] %></h2>
 <dl>
   <dd>Recipe ID: <%= @full_recipe[:recipe_id] %></dd>
   <dd>Description: <%= @full_recipe[:description] %></dd>
@@ -131,4 +127,4 @@
       </ul>
     </li>
   <% end %>
-</ul>
+</ul> -->
