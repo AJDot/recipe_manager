@@ -1,7 +1,10 @@
 require 'pg'
 require 'yaml'
 
+##################################################
 # FIXME: Add oven_temp and cook_time to database
+##################################################
+
 class DatabasePersistence
   def initialize(logger = nil)
     @db = if Sinatra::Base.production?

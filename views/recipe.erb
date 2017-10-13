@@ -1,7 +1,11 @@
-<form action="/recipe/<%= @full_recipe[:recipe_id] %>/save_image" method="post" enctype="multipart/form-data">
-  <input type="file" name="file" />
-  <input type="submit" value="Upload Image" />
-</form>
+<ul>
+  <% @test.each do |key, val| %>
+    <li><%= key %>: <%= val %></li>
+  <% end %>
+</ul>
+
+<a href="/recipe/<%= @recipe_id %>/edit">Edit Recipe</a>
+
 <article class="recipe">
   <header>
     <% if @full_recipe[:img_filename] %>

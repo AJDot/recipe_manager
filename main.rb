@@ -4,6 +4,10 @@ require 'pry'
 
 require_relative './database_persistence'
 
+##################################################
+# FIXME: Add Edit Recipe Form
+##################################################
+
 configure do
   set :erb, :escape_html => true
 end
@@ -94,10 +98,34 @@ get '/' do
 end
 
 get '/recipe/:recipe_id' do
-  recipe_id = params[:recipe_id].to_i
-  @full_recipe = @storage.full_recipe(recipe_id)
+  @recipe_id = params[:recipe_id].to_i
+  @full_recipe = @storage.full_recipe(@recipe_id)
+  @test = {}
 
   erb :recipe, layout: :layout
+end
+
+get '/recipe/:recipe_id/edit' do
+  @recipe_id = params[:recipe_id].to_i
+  erb :edit_recipe, layout: :layout
+end
+
+post '/recipe/:recipe_id' do
+  @recipe_id = params[:recipe_id].to_i
+  @full_recipe = @storage.full_recipe(@recipe_id)
+  image_file = params[:image][:tempfile] if params[:image]
+
+  @test = {
+    title: params[:title],
+    image: params[:image] || '',
+    ethnicities: params[:ethnicities].split(/\r?\n/),
+    categories: params[:categories].split(/\r?\n/),
+    ingredients: params[:ingredients].split(/\r?\n/),
+    steps: params[:steps].split(/\r?\n/),
+    notes: params[:notes].split(/\r?\n/)
+  }
+  erb :recipe
+  # redirect "/recipe/#{recipe_id}"
 end
 
 post '/recipe/:recipe_id/save_image' do
