@@ -1,10 +1,6 @@
 require 'pg'
 require 'yaml'
 
-##################################################
-# FIXME: Add oven_temp and cook_time to database
-##################################################
-
 class DatabasePersistence
   def initialize(logger = nil)
     @db = if Sinatra::Base.production?
@@ -71,25 +67,29 @@ class DatabasePersistence
 
     recipe_id = find_recipe_id(data[:name])
 
-    if data.key?(:categories)
+    # if data.key?(:categories)
       add_recipe_categories(recipe_id, *data[:categories])
-    end
+    # end
 
-    if data.key?(:ethnicities)
+    # if data.key?(:ethnicities)
       add_recipe_ethnicities(recipe_id, *data[:ethnicities])
-    end
+    # end
 
-    if data.key?(:ingredients)
+    # if data[:ingredients] && !data[:ingredients].empty?
       add_recipe_ingredients(recipe_id, *data[:ingredients])
-    end
+    # end
 
-    if data.key?(:steps)
+    # if data[:steps] && !data[:steps].empty?
       add_recipe_steps(recipe_id, *data[:steps])
-    end
+    # end
 
-    if data.key?(:notes)
+    # if data[:notes] && !data[:notes].empty?
       add_recipe_notes(recipe_id, *data[:notes])
-    end
+    # end
+
+    # if data[:img_filename]
+      update_recipe_image(recipe_id, data[:img_filename])
+    # end
   end
 
   def update_recipe(recipe_id, data)
@@ -98,17 +98,11 @@ class DatabasePersistence
          SET name = $2, description = $3
        WHERE id = $1
     SQL
-
     query(sql_update, recipe_id, data[:name], data[:description])
-
     update_recipe_categories(recipe_id, data[:categories])
-
     update_recipe_ethnicities(recipe_id, data[:ethnicities])
-
     update_recipe_ingredients(recipe_id, data[:ingredients])
-
     update_recipe_steps(recipe_id, data[:steps])
-
     update_recipe_notes(recipe_id, data[:notes])
   end
 
@@ -140,6 +134,7 @@ class DatabasePersistence
   end
 
   def add_recipe_ingredients(recipe_id, *ings)
+    return if ings.empty?
     sql = <<~SQL
       SELECT ing_number FROM ingredients
       WHERE recipe_id = $1
@@ -148,7 +143,7 @@ class DatabasePersistence
     SQL
 
     result = query(sql, recipe_id)
-    next_number = result.ntuples + 1;
+    next_number = result.ntuples + 1
 
     sql_insert = <<~SQL
       INSERT INTO ingredients
@@ -438,6 +433,7 @@ class DatabasePersistence
   end
 
   def add_recipe_steps(recipe_id, *steps)
+    return if steps.empty?
     sql = <<~SQL
       SELECT step_number FROM steps
       WHERE recipe_id = $1
@@ -570,6 +566,7 @@ class DatabasePersistence
   end
 
   def update_recipe_image(recipe_id, filename)
+    return unless filename
     sql = <<~SQL
       SELECT img_filename FROM images WHERE recipe_id = $1
       ORDER BY img_number DESC LIMIT 1
@@ -859,5 +856,4 @@ class DatabasePersistence
       values << ')'
     end.join(', ')
   end
-
 end

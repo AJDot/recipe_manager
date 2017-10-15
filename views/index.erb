@@ -1,3 +1,9 @@
+<% content_for :header_links do %>
+  <ul>
+    <li><a href="/recipe/create">New Recipe</a></li>
+  </ul>
+<% end %>
+
 <ul class="card-list">
   <% @recipes.each do |recipe| %>
     <li>

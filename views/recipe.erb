@@ -4,8 +4,12 @@
   <% end %>
 </ul> -->
 
-<a href="/">Recipe Cards</a>
-<a href="/recipe/<%= @recipe_id %>/edit">Edit Recipe</a>
+<% content_for :header_links do %>
+  <ul>
+    <li><a href="/">Recipe Cards</a></li>
+    <li><a href="/recipe/<%= @recipe_id %>/edit">Edit Recipe</a></li>
+  </ul>
+<% end %>
 
 <article class="recipe">
   <header>

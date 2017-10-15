@@ -1,11 +1,17 @@
 require 'sinatra'
+require 'sinatra/content_for'
 require 'tilt/erubis'
 require 'pry'
 
 require_relative './database_persistence'
 
 ##################################################
-# FIXME: Add Edit Recipe Form
+# FIXME: Refactor Edit Recipe Form
+# FIXME: Add New Recipe Form
+# FIXME: Add oven_temp and cook_time to database
+# FIXME: Space out paragraphs on edit recipe form in textarea
+# FIXME: Add Icon Link animation (made on CodePen)
+# FIXME: Add Tests for creating and editing recipes
 ##################################################
 
 configure do
@@ -45,6 +51,21 @@ end
 def save_image(filename, file_location)
   file_destination = File.join(images_path, filename)
   FileUtils.copy(file_location, file_destination)
+end
+
+def get_new_data(params)
+  new_image = params[:image][:filename] if params[:image]
+  img_filename = new_image || params[:current_image] || nil
+  {
+    name: params[:name],
+    description: params[:description],
+    ethnicities: params[:ethnicities].split(/\r?\n/),
+    categories: params[:categories].split(/\r?\n/),
+    ingredients: params[:ingredients].split(/\r?\n/),
+    steps: params[:steps].split(/\r?\n/),
+    notes: params[:notes].split(/\r?\n/),
+    img_filename: img_filename
+  }
 end
 
 helpers do
@@ -112,6 +133,10 @@ get '/' do
   erb :index, layout: :layout
 end
 
+get '/recipe/create' do
+  erb :create_recipe, layout: :layout
+end
+
 get '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
   @full_recipe = @storage.full_recipe(@recipe_id)
@@ -126,20 +151,30 @@ get '/recipe/:recipe_id/edit' do
   erb :edit_recipe, layout: :layout
 end
 
+post '/recipe/create' do
+  @new_data = get_new_data(params)
+  @storage.create_recipe(@new_data)
+  new_image = params[:image] if params[:image]
+  save_image(new_image[:filename], new_image[:tempfile].path) if new_image
+
+  @recipe_id = @storage.find_recipe_id(@new_data[:name])
+  redirect "recipe/#{@recipe_id}"
+end
+
 post '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
   new_image = params[:image] if params[:image]
-
-  @new_data = {
-    name: params[:name],
-    description: params[:description],
-    ethnicities: params[:ethnicities].split(/\r?\n/),
-    categories: params[:categories].split(/\r?\n/),
-    ingredients: params[:ingredients].split(/\r?\n/),
-    steps: params[:steps].split(/\r?\n/),
-    notes: params[:notes].split(/\r?\n/),
-    img_filename: (new_image ? new_image[:filename] : params[:current_image])
-  }
+  @new_data = get_new_data(params)
+  # @new_data = {
+  #   name: params[:name],
+  #   description: params[:description],
+  #   ethnicities: params[:ethnicities].split(/\r?\n/),
+  #   categories: params[:categories].split(/\r?\n/),
+  #   ingredients: params[:ingredients].split(/\r?\n/),
+  #   steps: params[:steps].split(/\r?\n/),
+  #   notes: params[:notes].split(/\r?\n/),
+  #   img_filename: (new_image ? new_image[:filename] : params[:current_image])
+  # }
 
   @storage.update_recipe(@recipe_id, @new_data)
 
