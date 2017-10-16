@@ -57,6 +57,15 @@ main::after {
   background: #44dda0;
 }
 
+input[type="submit"] {
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+}
 
 .btn {
   font: inherit;
@@ -82,15 +91,29 @@ main::after {
   background: #44dda0;
 }
 
-.header-links > ul > li {
+input[type="submit"].btn {
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  margin: 20px 0;
+}
+
+.header-links li {
   display: inline-block;
 }
 
-.header-links > ul > li:hover {
-  color: #44dda0;
-  background: #333333;
+.header-links input[type="submit"] {
+  color: inherit;
+  background: inherit;
 }
 
+.header-links li {
+  border-bottom: 2px solid transparent;
+}
+
+.header-links li:hover {
+  border-bottom: 2px solid #44dda0;
+}
 
 /*
 *************************
@@ -291,7 +314,7 @@ ul.card-list .content p {
 *************************
 */
 
-form {
+.edit-recipe {
   max-width: 960px;
   padding: 10px;
   margin: 0 auto;
@@ -299,7 +322,7 @@ form {
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, .3);
 }
 
-form h2 {
+.edit-recipe h2 {
   font-size: 36px;
   font-family: 'Raleway', sans-serif;
   padding: 0 0 5px 0;
@@ -362,15 +385,6 @@ textarea:focus {
   font: normal 36px 'Josefin Slab', serif;
 }
 
-input[type="submit"] {
-  display: block;
-  width: 100%;
-  padding: 10px 0;
-  margin: 20px 0;
-  /*color: #333333;
-  background: #44dda0;*/
-}
-
 .image {
   display: inline-block;
   width: 49%;
@@ -419,3 +433,9 @@ input[type="submit"] {
   width: 49%;
   box-sizing: border-box;
 }
+
+/*
+*************************
+  DELETE RECIPE BUTTON
+*************************
+*/

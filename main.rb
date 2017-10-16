@@ -6,6 +6,7 @@ require 'pry'
 require_relative './database_persistence'
 
 ##################################################
+# FIXME: Add delete recipe feature
 # FIXME: Add oven_temp and cook_time to database
 # FIXME: Add Icon Link animation (made on CodePen)
 # FIXME: Add Tests for creating and editing recipes
@@ -114,6 +115,13 @@ get '/recipe/:recipe_id/edit' do
   @recipe_id = params[:recipe_id].to_i
   @full_recipe = @storage.full_recipe(@recipe_id)
   erb :edit_recipe, layout: :layout
+end
+
+# Delete recipe
+post '/recipe/:recipe_id/destroy' do
+  @recipe_id = params[:recipe_id].to_i
+  @storage.destroy_recipe(@recipe_id)
+  redirect '/'
 end
 
 # Process create new recipe

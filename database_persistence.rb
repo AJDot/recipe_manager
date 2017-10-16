@@ -106,6 +106,14 @@ class DatabasePersistence
     update_recipe_notes(recipe_id, data[:notes])
   end
 
+  def destroy_recipe(recipe_id)
+    sql_delete = <<~SQL
+      DELETE FROM recipes WHERE id = $1
+    SQL
+
+    query(sql_delete, recipe_id)
+  end
+
   def find_recipe_id(recipe_name)
     sql = <<~SQL
       SELECT * FROM recipes
