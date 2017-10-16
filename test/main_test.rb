@@ -10,6 +10,7 @@ require_relative '../main.rb'
 
 class RecipeManagerTest < Minitest::Test
   include Rack::Test::Methods
+  include Rack::Multipart
 
   def app
     Sinatra::Application
@@ -164,23 +165,78 @@ class RecipeManagerTest < Minitest::Test
     assert_includes last_response.body, test_note
   end
 
-  def test_view_recipe_detail_image
+  def test_create_recipe
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      ethnicities: "e1\\r\\ne2",
+      categories: "c1\\r\\nc2",
+      ingredients: "i1\\r\\ni2",
+      steps: "s1\\r\\ns2",
+      notes: "n1\\r\\nn2",
+      current_image: 'test_image.jpg'
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
 
-    test_image_filename = 'test_image.jpg'
-    @storage.update_recipe_image(recipe_id, test_image_filename)
+    post "/recipe/create", recipe_data
+    assert_equal 302, last_response.status
 
-    # Display recipe details
-    get "/recipe/#{recipe_id}"
-
+    get last_response["Location"]
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
     assert_includes last_response.body, recipe_data[:description]
-    assert_includes last_response.body, test_image_filename
+    recipe_data[:ethnicities].split(/\r?\n/).each do |eth|
+      assert_includes last_response.body, "#{eth}</li>"
+    end
+    recipe_data[:categories].split(/\r?\n/).each do |cat|
+      assert_includes last_response.body, "#{cat}</li>"
+    end
+    recipe_data[:ingredients].split(/\r?\n/).each do |ing|
+      assert_includes last_response.body, "#{ing}</li>"
+    end
+    recipe_data[:steps].split(/\r?\n/).each do |step|
+      assert_includes last_response.body, "#{step}</li>"
+    end
+    recipe_data[:notes].split(/\r?\n/).each do |note|
+      assert_includes last_response.body, "#{note}</li>"
+    end
+    assert_includes last_response.body, recipe_data[:current_image]
+  end
+
+  def test_edit_recipe
+    recipe_data = {
+      name: 'Test Recipe 1',
+      description: 'Test recipe description 1',
+      ethnicities: "e1\\r\\ne2",
+      categories: "c1\\r\\nc2",
+      ingredients: "i1\\r\\ni2",
+      steps: "s1\\r\\ns2",
+      notes: "n1\\r\\nn2"
+    }
+
+    @storage.create_recipe(recipe_data)
+    recipe_id = @storage.find_recipe_id(recipe_data[:name])
+
+    post "/recipe/#{recipe_id}", recipe_data
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, recipe_data[:name]
+    assert_includes last_response.body, recipe_data[:description]
+    recipe_data[:ethnicities].split(/\r?\n/).each do |eth|
+      assert_includes last_response.body, "#{eth}</li>"
+    end
+    recipe_data[:categories].split(/\r?\n/).each do |cat|
+      assert_includes last_response.body, "#{cat}</li>"
+    end
+    recipe_data[:ingredients].split(/\r?\n/).each do |ing|
+      assert_includes last_response.body, "#{ing}</li>"
+    end
+    recipe_data[:steps].split(/\r?\n/).each do |step|
+      assert_includes last_response.body, "#{step}</li>"
+    end
+    recipe_data[:notes].split(/\r?\n/).each do |note|
+      assert_includes last_response.body, "#{note}</li>"
+    end
   end
 end

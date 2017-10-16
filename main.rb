@@ -6,10 +6,7 @@ require 'pry'
 require_relative './database_persistence'
 
 ##################################################
-# FIXME: Refactor Edit Recipe Form
-# FIXME: Add New Recipe Form
 # FIXME: Add oven_temp and cook_time to database
-# FIXME: Space out paragraphs on edit recipe form in textarea
 # FIXME: Add Icon Link animation (made on CodePen)
 # FIXME: Add Tests for creating and editing recipes
 # FIXME: Scale recipes
@@ -47,12 +44,8 @@ end
 #   paths.select { |path| File.file?(path) }
 # end
 
-def images_path
-  File.expand_path("../public/images", __FILE__);
-end
-
 def save_image(filename, file_location)
-  file_destination = File.join(images_path, filename)
+  file_destination = File.join(data_path, 'images', filename)
   FileUtils.copy(file_location, file_destination)
 end
 
