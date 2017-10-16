@@ -273,7 +273,7 @@ class DatabasePersistence
     end
   end
 
-  def all_recipe_categories
+  def all_recipes_categories
     sql = <<~SQL
       SELECT * FROM categories AS c
       INNER JOIN recipes_categories AS rc ON c.id = rc.category_id
@@ -554,7 +554,7 @@ class DatabasePersistence
     result[0]["img_filename"]
   end
 
-  def all_recipe_images
+  def all_images
     sql = <<~SQL
       SELECT * FROM images
     SQL
