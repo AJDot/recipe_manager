@@ -54,7 +54,7 @@ main::after {
 
 ::selection {
   color: #000000;
-  background: #44dda0;
+  background: #44dd9f;
 }
 
 input[type="submit"] {
@@ -88,7 +88,7 @@ input[type="submit"] {
 .btn:hover,
 .btn :hover {
   color: #000000;
-  background: #44dda0;
+  background: #44dd9f;
 }
 
 input[type="submit"].btn {
@@ -112,7 +112,7 @@ input[type="submit"].btn {
 }
 
 .header-links li:hover {
-  border-bottom: 2px solid #44dda0;
+  border-bottom: 2px solid #44dd9f;
 }
 
 /*
@@ -194,7 +194,7 @@ ul.card-list .content a.view-recipe {
 }
 
 ul.card-list .content a.view-recipe:hover {
-  color: #44dda0;
+  color: #44dd9f;
   background: #ffffff;
 }
 
@@ -436,6 +436,22 @@ textarea:focus {
 
 /*
 *************************
-  DELETE RECIPE BUTTON
+  FLASH MESSAGES
 *************************
 */
+
+.flash {
+  padding: .625em;
+  margin: .625em 0;
+  text-align: center;
+  color: #ffffff;
+  background: #4d9ad9; /* blue */
+}
+
+.flash.error {
+  background: #ff834e; /* red */
+}
+
+.flash.success {
+  background: #44dd9f; /* green */
+}

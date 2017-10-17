@@ -201,6 +201,24 @@ class RecipeManagerTest < Minitest::Test
     assert_includes last_response.body, recipe_data[:current_image]
   end
 
+  def test_create_recipe_name_unique_error
+    recipe_data = { name: 'Test Recipe 1' }
+
+    post '/recipe/create', recipe_data
+    assert_equal 302, last_response.status
+    post '/recipe/create', recipe_data
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Recipe name must be unique.'
+  end
+
+  def test_create_recipe_name_size_error
+    recipe_data = { name: '' }
+
+    post '/recipe/create', recipe_data
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Recipe name must be between 1 and 100 characters.'
+  end
+
   def test_edit_recipe
     recipe_data = {
       name: 'Test Recipe 1',

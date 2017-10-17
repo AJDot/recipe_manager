@@ -6,16 +6,19 @@ require 'pry'
 require_relative './database_persistence'
 
 ##################################################
-# FIXME: Add tests for delete recipe feature
+# FIXME: Add success/error feedback for user actions
 # FIXME: make a Recipe Class (maybe?)
 # FIXME: Add oven_temp and cook_time to database
 # FIXME: Add Icon Link animation (made on CodePen)
 # FIXME: Scale recipes
 # FIXME: Find or create function to scale numbers and output most appropriate form of number (given units of number)
-# FIXME: Add success/error feedback for user actions
+# FIXME: Add recipe card sorting feature
+# FIXME: Add recipe card filter feature
 ##################################################
 
 configure do
+  enable :sessions
+  set :session_secret, 'secret'
   set :erb, :escape_html => true
 end
 
@@ -40,11 +43,6 @@ def data_path
   end
 end
 
-# def recipe_paths
-#   paths = Dir.glob(File.join(data_path, "**", "*"))
-#   paths.select { |path| File.file?(path) }
-# end
-
 def save_image(filename, file_location)
   file_destination = File.join(data_path, 'images', filename)
   FileUtils.copy(file_location, file_destination)
@@ -54,15 +52,26 @@ def get_recipe_form_data(params)
   new_image = params[:image] && params[:image][:filename]
   img_filename = new_image || params[:current_image]
   {
-    name: params[:name],
+    name: params[:name].strip,
     description: params[:description],
-    ethnicities: params[:ethnicities].split(/\r?\n/),
-    categories: params[:categories].split(/\r?\n/),
-    ingredients: params[:ingredients].split(/\r?\n/),
-    steps: params[:steps].split(/\r?\n/),
-    notes: params[:notes].split(/\r?\n/),
+    ethnicities: params[:ethnicities] && params[:ethnicities].split(/\r?\n/).uniq,
+    categories: params[:categories] && params[:categories].split(/\r?\n/).uniq,
+    ingredients: params[:ingredients] && params[:ingredients].split(/\r?\n/).uniq,
+    steps: params[:steps] && params[:steps].split(/\r?\n/),
+    notes: params[:notes] && params[:notes].split(/\r?\n/),
     img_filename: img_filename
   }
+end
+
+def recipe_name_error(recipe_id, name)
+  recipes = @storage.recipes
+  # Require name is between 1 and 100 characters
+  if !(1..100).cover? name.size
+    'Recipe name must be between 1 and 100 characters.'
+  # Require name is unique
+  elsif recipes.any? { |recipe| recipe[:name] == name && recipe[:recipe_id] != recipe_id }
+    'Recipe name must be unique.'
+  end
 end
 
 helpers do
@@ -105,7 +114,6 @@ end
 get '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
   @full_recipe = @storage.full_recipe(@recipe_id)
-  @test = {}
 
   erb :recipe, layout: :layout
 end
@@ -127,12 +135,20 @@ end
 # Process create new recipe
 post '/recipe/create' do
   @new_data = get_recipe_form_data(params)
-  @storage.create_recipe(@new_data)
-  new_image = params[:image] if params[:image]
-  save_image(new_image[:filename], new_image[:tempfile].path) if new_image
 
-  @recipe_id = @storage.find_recipe_id(@new_data[:name])
-  redirect "recipe/#{@recipe_id}"
+  error = recipe_name_error(nil, @new_data[:name])
+  if error
+    session[:error] = error
+    status 422
+    erb :create_recipe, layout: :layout
+  else
+    @storage.create_recipe(@new_data)
+    new_image = params[:image] if params[:image]
+    save_image(new_image[:filename], new_image[:tempfile].path) if new_image
+
+    @recipe_id = @storage.find_recipe_id(@new_data[:name])
+    redirect "recipe/#{@recipe_id}"
+  end
 end
 
 # Process edit recipe
@@ -140,13 +156,20 @@ post '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
   @new_data = get_recipe_form_data(params)
 
-  @storage.update_recipe(@recipe_id, @new_data)
+  error = recipe_name_error(@recipe_id, @new_data[:name])
+  if error
+    session[:error] = error
+    status 422
+    erb :edit_recipe, layout: :layout
+  else
+    @storage.update_recipe(@recipe_id, @new_data)
 
-  new_image = params[:image]
-  if new_image
-    @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
-    save_image(new_image[:filename], new_image[:tempfile].path)
+    new_image = params[:image]
+    if new_image
+      @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
+      save_image(new_image[:filename], new_image[:tempfile].path)
+    end
+
+    redirect "/recipe/#{@recipe_id}"
   end
-
-  redirect "/recipe/#{@recipe_id}"
 end

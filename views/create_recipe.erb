@@ -10,7 +10,7 @@
   <dl class="name">
     <dt><label for="name">Name</label></dt>
     <dd>
-      <input type="text" name="name" id="name" value="" placeholder="My Super Awesome Recipe" />
+      <input type="text" name="name" id="name" value="<%= params[:name] %>" placeholder="My Super Awesome Recipe" />
     </dd>
   </dl>
   <dl class="image">
@@ -27,37 +27,37 @@
   <dl>
     <dt><label for="description">Description</label></dt>
     <dd>
-      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"></textarea>
+      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%= params[:description] %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="ethnicities">Ethnicities</label></dt>
     <dd>
-      <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."></textarea>
+      <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%= params[:ethnicities] %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="categories">Categories</label></dt>
     <dd>
-      <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."></textarea>
+      <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%= params[:categories] %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="ingredients">Ingredients</label></dt>
     <dd>
-      <textarea name="ingredients" id="ingredients" cols=80 rows=10 placeholder="Put each ingredient on its own line."></textarea>
+      <textarea name="ingredients" id="ingredients" cols=80 rows=10 placeholder="Put each ingredient on its own line."><%= params[:ingredients] %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="steps">Directions</label></dt>
     <dd>
-      <textarea name="steps" id="steps" cols=80 rows=10 placeholder="Put each step on its own line."></textarea>
+      <textarea name="steps" id="steps" cols=80 rows=10 placeholder="Put each step on its own line."><%= params[:steps] %></textarea>
     </dd>
   </dl>
   <dl>
     <dt><label for="notes">Notes</label></dt>
     <dd>
-      <textarea name="notes" id="notes" cols=80 rows=10 placeholder="Put each note on its own line."></textarea>
+      <textarea name="notes" id="notes" cols=80 rows=10 placeholder="Put each note on its own line."><%= params[:notes] %></textarea>
     </dd>
   </dl>
   <input class="btn" type="submit" value="Create" />
