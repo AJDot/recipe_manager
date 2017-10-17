@@ -10,7 +10,6 @@ require_relative '../main.rb'
 
 class RecipeManagerTest < Minitest::Test
   include Rack::Test::Methods
-  include Rack::Multipart
 
   def app
     Sinatra::Application
@@ -238,5 +237,21 @@ class RecipeManagerTest < Minitest::Test
     recipe_data[:notes].split(/\r?\n/).each do |note|
       assert_includes last_response.body, "#{note}</li>"
     end
+  end
+
+  def test_destroy_recipe
+    recipe_data = {
+      name: 'Test Recipe 1'
+    }
+
+    @storage.create_recipe(recipe_data)
+    recipe_id = @storage.find_recipe_id(recipe_data[:name])
+
+    post "/recipe/#{recipe_id}/destroy", recipe_data
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_equal 200, last_response.status
+    refute_includes last_response.body, recipe_data[:name]
   end
 end
