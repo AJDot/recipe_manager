@@ -14,6 +14,8 @@ require_relative './database_persistence'
 # FIXME: Find or create function to scale numbers and output most appropriate form of number (given units of number)
 # FIXME: Add recipe card sorting feature
 # FIXME: Add recipe card filter feature
+# FIXME: Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
+# FIXME: Add feature to 'complete' ingredients and directions
 ##################################################
 
 configure do
@@ -54,22 +56,26 @@ def get_recipe_form_data(params)
   {
     name: params[:name].strip,
     description: params[:description],
-    ethnicities: params[:ethnicities] && params[:ethnicities].split(/\r?\n/).uniq,
-    categories: params[:categories] && params[:categories].split(/\r?\n/).uniq,
-    ingredients: params[:ingredients] && params[:ingredients].split(/\r?\n/).uniq,
-    steps: params[:steps] && params[:steps].split(/\r?\n/),
-    notes: params[:notes] && params[:notes].split(/\r?\n/),
+    ethnicities: process_detail(params[:ethnicities]),
+    categories: process_detail(params[:categories]),
+    ingredients: process_detail(params[:ingredients]),
+    steps: process_detail(params[:steps]),
+    notes: process_detail(params[:notes]),
     img_filename: img_filename
   }
 end
 
+def process_detail(detail)
+  detail && detail.split(/\r?\n/).uniq
+end
+
 def recipe_name_error(recipe_id, name)
   recipes = @storage.recipes
-  # Require name is between 1 and 100 characters
   if !(1..100).cover? name.size
     'Recipe name must be between 1 and 100 characters.'
-  # Require name is unique
-  elsif recipes.any? { |recipe| recipe[:name] == name && recipe[:recipe_id] != recipe_id }
+  elsif recipes.any? do |recipe|
+          recipe[:name] == name && recipe[:recipe_id] != recipe_id
+        end
     'Recipe name must be unique.'
   end
 end
@@ -129,10 +135,11 @@ end
 post '/recipe/:recipe_id/destroy' do
   @recipe_id = params[:recipe_id].to_i
   @storage.destroy_recipe(@recipe_id)
+  session[:success] = "#{params[:name]} was successfully deleted."
   redirect '/'
 end
 
-# Process create new recipe
+# Create new recipe
 post '/recipe/create' do
   @new_data = get_recipe_form_data(params)
 
@@ -143,15 +150,19 @@ post '/recipe/create' do
     erb :create_recipe, layout: :layout
   else
     @storage.create_recipe(@new_data)
-    new_image = params[:image] if params[:image]
-    save_image(new_image[:filename], new_image[:tempfile].path) if new_image
-
     @recipe_id = @storage.find_recipe_id(@new_data[:name])
+
+    new_image = params[:image]
+    if new_image
+      @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
+      save_image(new_image[:filename], new_image[:tempfile].path)
+    end
+    session[:success] = "#{@new_data[:name]} was successfully created."
     redirect "recipe/#{@recipe_id}"
   end
 end
 
-# Process edit recipe
+# Edit recipe
 post '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
   @new_data = get_recipe_form_data(params)
@@ -170,6 +181,7 @@ post '/recipe/:recipe_id' do
       save_image(new_image[:filename], new_image[:tempfile].path)
     end
 
+    session[:success] = "#{@new_data[:name]} was successfully updated."
     redirect "/recipe/#{@recipe_id}"
   end
 end

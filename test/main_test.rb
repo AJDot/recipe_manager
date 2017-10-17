@@ -199,6 +199,7 @@ class RecipeManagerTest < Minitest::Test
       assert_includes last_response.body, "#{note}</li>"
     end
     assert_includes last_response.body, recipe_data[:current_image]
+    assert_includes last_response.body, "#{recipe_data[:name]} was successfully created."
   end
 
   def test_create_recipe_name_unique_error
@@ -255,6 +256,7 @@ class RecipeManagerTest < Minitest::Test
     recipe_data[:notes].split(/\r?\n/).each do |note|
       assert_includes last_response.body, "#{note}</li>"
     end
+    assert_includes last_response.body, "#{recipe_data[:name]} was successfully updated."
   end
 
   def test_destroy_recipe
@@ -270,6 +272,7 @@ class RecipeManagerTest < Minitest::Test
 
     get last_response["Location"]
     assert_equal 200, last_response.status
-    refute_includes last_response.body, recipe_data[:name]
+    refute_includes last_response.body, "#{recipe_data[:name]}</h2>"
+    assert_includes last_response.body, "#{recipe_data[:name]} was successfully deleted."
   end
 end

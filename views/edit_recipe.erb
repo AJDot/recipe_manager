@@ -1,14 +1,11 @@
-<!-- <p>
-  <%= @full_recipe %>
-</p> -->
-
 <% content_for :header_links do %>
   <ul>
     <li><a href="/">Recipe Cards</a></li>
     <li><a href="/recipe/<%= @recipe_id %>">Back to Recipe</a></li>
     <li>
       <form action="/recipe/<%= @recipe_id %>/destroy" method="post">
-        <input class='delete' type="submit" value="Delete Recipe" />
+        <input class="delete" type="submit" value="Delete Recipe" />
+        <input type="hidden" name="name" value="<%= @full_recipe[:name] %>" />
       </form>
     </li>
   </ul>

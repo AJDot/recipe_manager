@@ -173,7 +173,8 @@ ul.card-list .content {
   transition: transform .5s ease;
 }
 
-ul.card-list > li:hover .content {
+ul.card-list > li:hover .content,
+ul.card-list > li:focus-within .content {
   position: absolute;
   padding: 0 1em;
   transform: translateY(0);
