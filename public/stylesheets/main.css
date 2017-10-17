@@ -1,5 +1,18 @@
 @import url("whitespace-reset.css");
 
+/*
+  COLORS
+**********************
+  BLUE
+  #4d9ad9;
+  RED
+  #ff834e;
+  GREEN
+  #44dd9f;
+  ORANGE
+  #ffb54e;
+*/
+
 body {
   font: normal 14px 'Raleway', Helvetica, Arial, sans-serif;
   color: #333333;
@@ -98,8 +111,12 @@ input[type="submit"].btn {
   margin: 20px 0;
 }
 
+.header-links ul {
+  font-size: 36px;
+}
+
 .header-links li {
-  display: inline-block;
+  display: inline;
 }
 
 .header-links input[type="submit"] {
@@ -107,12 +124,26 @@ input[type="submit"].btn {
   background: inherit;
 }
 
-.header-links li {
-  border-bottom: 2px solid transparent;
+.header-links span {
+  transition: border-bottom .3s ease, text-indent .5s ease .5s;
+  border-bottom: 3px solid transparent;
 }
 
-.header-links li:hover {
-  border-bottom: 2px solid #44dd9f;
+.header-links li:hover span {
+  transition: border-bottom .3s ease .5s, text-indent .5s ease;
+  border-bottom: 3px solid #44dd9f;
+}
+
+.header-links li:hover span.destroy {
+  border-bottom-color: #ff834e;
+}
+
+.header-links li:hover span.cancel {
+  border-bottom-color: #4d9ad9;
+}
+
+.header-links form {
+  display: inline;
 }
 
 /*
@@ -455,4 +486,38 @@ textarea:focus {
 
 .flash.success {
   background: #44dd9f; /* green */
+}
+
+/*
+*************************
+  ICONS WITH SLIDE-IN TEXT
+*************************
+*/
+
+.material-icons + span,
+.icon + span {
+  display: inline-block;
+  text-indent: -100%;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.material-icons:hover + span,
+.icon:hover + span {
+  text-indent: 0;
+}
+
+.material-icons,
+.icon {
+  font-size: inherit;
+  line-height: inherit;
+  vertical-align: top;
+  margin-top: .07em;
+  transition: all .5s ease;
+  cursor: pointer;
+}
+
+.spin:hover {
+  transform: rotate(360deg);
 }

@@ -1,12 +1,17 @@
 <% content_for :header_links do %>
   <ul>
-    <li><a href="/">Recipe Cards</a></li>
-    <li><a href="/recipe/<%= @recipe_id %>">Back to Recipe</a></li>
+    <li><a href="/"><i class="material-icons">view_module</i><span>Recipe Cards</span></a></li>
+    <li><a href="/recipe/<%= @recipe_id %>"><i class="material-icons">receipt</i><span class="cancel">Back to Recipe</span></a></li>
     <li>
-      <form action="/recipe/<%= @recipe_id %>/destroy" method="post">
-        <input class="delete" type="submit" value="Delete Recipe" />
-        <input type="hidden" name="name" value="<%= @full_recipe[:name] %>" />
-      </form>
+      <label class="icon" for="delete">
+        <i class="material-icons">delete</i>
+      </label>
+      <span class="destroy">
+        <form action="/recipe/<%= @recipe_id %>/destroy" method="post">
+          <input class="delete" id="delete" type="submit" value="Delete Recipe" />
+          <input type="hidden" name="name" value="<%= @full_recipe[:name] %>" />
+        </form>
+      </span>
     </li>
   </ul>
 <% end %>
