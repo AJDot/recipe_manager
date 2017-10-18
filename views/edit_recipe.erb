@@ -1,10 +1,10 @@
 <% content_for :header_links do %>
   <ul>
-    <li><a href="/"><i class="material-icons">view_module</i><span>Recipe Cards</span></a></li>
-    <li><a href="/recipe/<%= @recipe_id %>"><i class="material-icons">receipt</i><span class="cancel">Back to Recipe</span></a></li>
+    <li><a href="/"><i class="material-icons wiggle">view_module</i><span>Recipe Cards</span></a></li>
+    <li><a href="/recipe/<%= @recipe_id %>"><i class="material-icons wiggle">receipt</i><span class="cancel">Back to Recipe</span></a></li>
     <li>
       <label class="icon" for="delete">
-        <i class="material-icons">delete</i>
+        <i class="material-icons wiggle">delete</i>
       </label>
       <span class="destroy">
         <form action="/recipe/<%= @recipe_id %>/destroy" method="post">

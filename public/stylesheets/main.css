@@ -521,3 +521,27 @@ textarea:focus {
 .spin:hover {
   transform: rotate(360deg);
 }
+
+.wiggle:hover {
+  animation: wiggle .2s 2 linear;
+  /*transform: rotate(45deg);*/
+  /*transform: rotate(45deg) rotate(-45deg);*/
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(45deg);
+  }
+  50% {
+    transform: rotate(0);
+  }
+  75% {
+    transform: rotate(-45deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
