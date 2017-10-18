@@ -21,7 +21,7 @@
             <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
           <% end %>
           <div class="content">
-            <a class="view-recipe" href="/recipe/<%= recipe[:recipe_id] %>">View Recipe</a>
+            <a class="view-recipe" href="/recipe/<%= recipe[:recipe_id] %>"><i class="material-icons">receipt</i>View Recipe</a>
             <ul class="categories">
               <% recipe[:categories].each do |category| %>
                 <li><%= category[:name] %></li>

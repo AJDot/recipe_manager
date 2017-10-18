@@ -6,12 +6,11 @@ require 'pry'
 require_relative './database_persistence'
 
 ##################################################
-# FIXME: Add success/error feedback for user actions
 # FIXME: make a Recipe Class (maybe?)
 # FIXME: Add oven_temp and cook_time to database
-# FIXME: Add Icon Link animation (made on CodePen)
 # FIXME: Scale recipes
-# FIXME: Find or create function to scale numbers and output most appropriate form of number (given units of number)
+# FIXME: Find or create function to scale numbers and output most appropriate
+#        form of number (given units of number)
 # FIXME: Add recipe card sorting feature
 # FIXME: Add recipe card filter feature
 # FIXME: Add 'Are you sure?' to any destructive action (deleting a recipe, etc)

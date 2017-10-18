@@ -222,7 +222,7 @@ ul.card-list .content a.view-recipe {
   text-align: center;
   text-transform: uppercase;
   box-sizing: border-box;
-  transition: all 200ms ease-out;
+  transition: all .2s ease-out;
 }
 
 ul.card-list .content a.view-recipe:hover {
@@ -494,6 +494,20 @@ textarea:focus {
 *************************
 */
 
+.header-links .material-icons,
+.header-links .icon {
+  margin: .07em 0 0 0;
+  transition: all .5s ease;
+}
+
+.material-icons,
+.icon {
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0 .3em;
+  cursor: pointer;
+}
+
 .material-icons + span,
 .icon + span {
   display: inline-block;
@@ -506,16 +520,6 @@ textarea:focus {
 .material-icons:hover + span,
 .icon:hover + span {
   text-indent: 0;
-}
-
-.material-icons,
-.icon {
-  font-size: inherit;
-  line-height: inherit;
-  vertical-align: top;
-  margin-top: .07em;
-  transition: all .5s ease;
-  cursor: pointer;
 }
 
 .spin:hover {
@@ -533,13 +537,13 @@ textarea:focus {
     transform: rotate(0);
   }
   25% {
-    transform: rotate(45deg);
+    transform: rotate(25deg);
   }
   50% {
     transform: rotate(0);
   }
   75% {
-    transform: rotate(-45deg);
+    transform: rotate(-25deg);
   }
   100% {
     transform: rotate(0);
