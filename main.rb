@@ -6,6 +6,7 @@ require 'pry'
 require_relative './database_persistence'
 
 ##################################################
+# FIXME: Add catches for bad urls (ex: bad recipe id)
 # FIXME: make a Recipe Class (maybe?)
 # FIXME: Add oven_temp and cook_time to database
 # FIXME: Scale recipes
@@ -68,6 +69,15 @@ def process_detail(detail)
   detail && detail.split(/\r?\n/).uniq
 end
 
+def load_recipe(id)
+  full_recipe = @storage.full_recipe(id)
+  return full_recipe if full_recipe
+
+  session[:error] = "The specified recipe was not found."
+  redirect "/"
+  halt
+end
+
 def recipe_name_error(recipe_id, name)
   recipes = @storage.recipes
   if !(1..100).cover? name.size
@@ -118,15 +128,14 @@ end
 # View recipe details
 get '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
-  @full_recipe = @storage.full_recipe(@recipe_id)
-
+  @full_recipe = load_recipe(@recipe_id)
   erb :recipe, layout: :layout
 end
 
 # View edit recipe form
 get '/recipe/:recipe_id/edit' do
   @recipe_id = params[:recipe_id].to_i
-  @full_recipe = @storage.full_recipe(@recipe_id)
+  @full_recipe = load_recipe(@recipe_id)
   erb :edit_recipe, layout: :layout
 end
 

@@ -8,7 +8,8 @@ class DatabasePersistence
           elsif Sinatra::Base.test?
             PG.connect(dbname: 'recipe_manager_clean')
           else
-            PG.connect(dbname: 'recipe_manager')
+            PG.connect(dbname: 'recipe_manager_clean')
+            # PG.connect(dbname: 'recipe_manager')
           end
     @logger = logger
   end
@@ -21,7 +22,7 @@ class DatabasePersistence
     @logger.info "#{statement}: #{params}" if @logger
 
     # Quiet the numerous outputs from psql when testing
-    @db.exec_params("SET client_min_messages = ERROR") if Sinatra::Base.test?
+    # @db.exec_params("SET client_min_messages = ERROR") if Sinatra::Base.test?
 
     @db.exec_params(statement, params)
   end
@@ -37,11 +38,13 @@ class DatabasePersistence
   def recipe(recipe_id)
     sql = 'SELECT * FROM recipes WHERE id = $1'
     result = query(sql, recipe_id)
+    return if result.values.empty?
     recipe_tuple_to_hash(result[0])
   end
 
   def full_recipe(recipe_id)
     recipe = recipe(recipe_id)
+    return unless recipe
     {
       name: recipe[:name],
       description: recipe[:description],
@@ -629,11 +632,11 @@ class DatabasePersistence
     end
   end
 
-  ###########################
+  ######################################################
 
   private
 
-  ###########################
+  ######################################################
 
   # RECIPES
 
