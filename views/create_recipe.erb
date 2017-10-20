@@ -12,12 +12,6 @@
 <form class="edit-recipe" action="/recipe/create" method="post" enctype="multipart/form-data">
   <h2>Create Recipe</h2>
   <input class="btn" type="submit" value="Create" />
-  <dl class="name">
-    <dt><label for="name">Name</label></dt>
-    <dd>
-      <input type="text" name="name" id="name" value="<%= params[:name] %>" placeholder="My Super Awesome Recipe" />
-    </dd>
-  </dl>
   <dl class="image">
     <dt>
       <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' />
@@ -29,13 +23,24 @@
       </label>
     </dd>
   </dl>
-  <dl>
-    <dt><label for="description">Description</label></dt>
+  <dl class="name">
+    <dt><label for="name">Name</label></dt>
     <dd>
-      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%= params[:description] %></textarea>
+      <input type="text" name="name" id="name" value="<%= params[:name] %>" placeholder="My Super Awesome Recipe" />
     </dd>
   </dl>
-  <dl>
+  <dl class="cook-time">
+    <dt><label for="hours">Cook Time</label></dt>
+    <dd>
+      <h3>Hours</h3>
+      <input type="number" name="hours" id="hours" value="<%= params[:hours] || 0 %>" />
+    </dd>
+    <dd>
+      <h3>Minutes</h3>
+      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || 0 %>" />
+    </dd>
+  </dl>
+  <dl class="ethnicities">
     <dt><label for="ethnicities">Ethnicities</label></dt>
     <dd>
       <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%= params[:ethnicities] %></textarea>
@@ -45,6 +50,12 @@
     <dt><label for="categories">Categories</label></dt>
     <dd>
       <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%= params[:categories] %></textarea>
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="description">Description</label></dt>
+    <dd>
+      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%= params[:description] %></textarea>
     </dd>
   </dl>
   <dl>

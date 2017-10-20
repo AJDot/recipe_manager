@@ -19,12 +19,6 @@
 <form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data">
   <h2>Edit Recipe: <%= params[:name] || @full_recipe[:name] %></h2>
   <input class="btn" type="submit" value="Update Recipe" placeholder="My Super Awesome Recipe" />
-  <dl class="name">
-    <dt><label for="name">Name</label></dt>
-    <dd>
-      <input type="text" name="name" id="name" value="<%= params[:name] || @full_recipe[:name] %>" />
-    </dd>
-  </dl>
   <dl class="image">
     <dt>
       <% if params[:current_image] || @full_recipe[:img_filename] %>
@@ -41,15 +35,24 @@
       </label>
     </dd>
   </dl>
-  <dl>
-    <dt><label for="description">Description</label></dt>
+  <dl class="name">
+    <dt><label for="name">Name</label></dt>
     <dd>
-      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%==
-        params[:description] || @full_recipe[:description]
-      %></textarea>
+      <input type="text" name="name" id="name" value="<%= params[:name] || @full_recipe[:name] %>" />
     </dd>
   </dl>
-  <dl>
+  <dl class="cook-time">
+    <dt><label for="hours">Cook Time</label></dt>
+    <dd>
+      <h3>Hours</h3>
+      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @full_recipe[:cook_time].hours || 0 %>" />
+    </dd>
+    <dd>
+      <h3>Minutes</h3>
+      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @full_recipe[:cook_time].minutes || 0 %>" />
+    </dd>
+  </dl>
+  <dl class="ethnicities">
     <dt><label for="ethnicities">Ethnicities</label></dt>
     <dd>
       <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
@@ -62,6 +65,14 @@
     <dd>
       <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
         params[:categories] || pluck_on_newlines(@full_recipe[:categories], :name)
+      %></textarea>
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="description">Description</label></dt>
+    <dd>
+      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%==
+        params[:description] || @full_recipe[:description]
       %></textarea>
     </dd>
   </dl>

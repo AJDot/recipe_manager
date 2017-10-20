@@ -13,6 +13,11 @@
       <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='#' />
     <% end %>
     <h1><%= @full_recipe[:name] %></h1>
+
+    <ul>
+      <li>Cook Time: <%= @full_recipe[:cook_time].form_hh_mm %></li>
+    </ul>
+
     <ul class="ethnicities">
       <% @full_recipe[:ethnicities].each do |eth| %>
         <li><%= eth[:name] %></li>

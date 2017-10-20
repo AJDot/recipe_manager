@@ -8,8 +8,7 @@ class DatabasePersistence
           elsif Sinatra::Base.test?
             PG.connect(dbname: 'recipe_manager_clean')
           else
-            PG.connect(dbname: 'recipe_manager_clean')
-            # PG.connect(dbname: 'recipe_manager')
+            PG.connect(dbname: 'recipe_manager')
           end
     @logger = logger
   end
@@ -48,6 +47,7 @@ class DatabasePersistence
     {
       name: recipe[:name],
       description: recipe[:description],
+      cook_time: recipe[:cook_time],
       ingredients: recipe_ingredients(recipe_id),
       categories: recipe_categories(recipe_id),
       ethnicities: recipe_ethnicities(recipe_id),
@@ -60,13 +60,17 @@ class DatabasePersistence
   def create_recipe(data)
     return if recipe_exists?(data[:name])
 
-    if data[:description]
-      sql_insert = 'INSERT INTO recipes (name, description) VALUES ($1, $2)'
-      query(sql_insert, data[:name], data[:description])
-    else
-      sql_insert = 'INSERT INTO recipes (name) VALUES ($1)'
-      query(sql_insert, data[:name])
-    end
+    # if data[:description]
+    #   sql_insert = 'INSERT INTO recipes (name, description) VALUES ($1, $2)'
+    #   query(sql_insert, data[:name], data[:description])
+    # else
+      # sql_insert = 'INSERT INTO recipes (name) VALUES ($1)'
+    sql_insert = <<~SQL
+      INSERT INTO recipes (name, description, cook_time) VALUES
+      ($1, $2, $3)
+    SQL
+    query(sql_insert, data[:name], data[:description], data[:cook_time])
+    # end
 
     recipe_id = find_recipe_id(data[:name])
 
@@ -98,10 +102,10 @@ class DatabasePersistence
   def update_recipe(recipe_id, data)
     sql_update = <<~SQL
       UPDATE recipes
-         SET name = $2, description = $3
+         SET name = $2, description = $3, cook_time = $4
        WHERE id = $1
     SQL
-    query(sql_update, recipe_id, data[:name], data[:description])
+    query(sql_update, recipe_id, data[:name], data[:description], data[:cook_time])
     update_recipe_categories(recipe_id, data[:categories])
     update_recipe_ethnicities(recipe_id, data[:ethnicities])
     update_recipe_ingredients(recipe_id, data[:ingredients])
@@ -654,7 +658,8 @@ class DatabasePersistence
     {
       recipe_id: tuple['id'].to_i,
       name: tuple['name'],
-      description: tuple['description']
+      description: tuple['description'],
+      cook_time: tuple['cook_time']
     }
   end
 

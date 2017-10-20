@@ -4,19 +4,23 @@ require 'tilt/erubis'
 require 'pry'
 
 require_relative './database_persistence'
+require_relative './lib/cooktime'
 
-##################################################
-# FIXME: Add catches for bad urls (ex: bad recipe id)
-# FIXME: make a Recipe Class (maybe?)
+################################################################################
 # FIXME: Add oven_temp and cook_time to database
-# FIXME: Scale recipes
-# FIXME: Find or create function to scale numbers and output most appropriate
-#        form of number (given units of number)
-# FIXME: Add recipe card sorting feature
-# FIXME: Add recipe card filter feature
-# FIXME: Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
-# FIXME: Add feature to 'complete' ingredients and directions
-##################################################
+# FIXME: Add check to ensure cook_time minutes are 0-59
+# FIXME: Add check to ensure cook_time hours are >= 0
+# FIXME: Add check to ensure cook_time total is >= 00:00
+# FIXME: Write tests for cook_time inputs and errors
+# FIXME: Write tests for bad recipe id in urls
+# FIXME: Use JS once learned? Scale recipes
+# FIXME: Use JS once learned? Find or create function to scale numbers and output most appropriate form of number (given units of number)
+# FIXME: Use JS once learned? Add recipe card sorting feature
+# FIXME: Use JS once learned? Add recipe card filter feature
+# FIXME: Use JS once learned? Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
+# FIXME: Use JS once learned? Add feature to 'complete' ingredients and directions
+# FIXME: Add catches for bad urls (ex: bad recipe id)
+################################################################################
 
 configure do
   enable :sessions
@@ -56,6 +60,9 @@ def get_recipe_form_data(params)
   {
     name: params[:name].strip,
     description: params[:description],
+    cook_time: "#{params[:hours]}:#{params[:minutes]}:00",
+    # hours: params[:hours],
+    # minutes: params[:minutes],
     ethnicities: process_detail(params[:ethnicities]),
     categories: process_detail(params[:categories]),
     ingredients: process_detail(params[:ingredients]),
@@ -71,7 +78,10 @@ end
 
 def load_recipe(id)
   full_recipe = @storage.full_recipe(id)
-  return full_recipe if full_recipe
+  if full_recipe
+    full_recipe[:cook_time] = CookTime.new(full_recipe[:cook_time])
+    return full_recipe
+  end
 
   session[:error] = "The specified recipe was not found."
   redirect "/"
@@ -88,6 +98,7 @@ def recipe_name_error(recipe_id, name)
     'Recipe name must be unique.'
   end
 end
+
 
 helpers do
   # Gather values of key from each hash in an array of hashes
