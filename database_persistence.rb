@@ -69,7 +69,8 @@ class DatabasePersistence
       INSERT INTO recipes (name, description, cook_time) VALUES
       ($1, $2, $3)
     SQL
-    query(sql_insert, data[:name], data[:description], data[:cook_time])
+    cook_time = hh_mm_to_cook_time(data[:hours], data[:minutes])
+    query(sql_insert, data[:name], data[:description], cook_time)
     # end
 
     recipe_id = find_recipe_id(data[:name])
@@ -105,7 +106,8 @@ class DatabasePersistence
          SET name = $2, description = $3, cook_time = $4
        WHERE id = $1
     SQL
-    query(sql_update, recipe_id, data[:name], data[:description], data[:cook_time])
+    cook_time = hh_mm_to_cook_time(data[:hours], data[:minutes])
+    query(sql_update, recipe_id, data[:name], data[:description], cook_time)
     update_recipe_categories(recipe_id, data[:categories])
     update_recipe_ethnicities(recipe_id, data[:ethnicities])
     update_recipe_ingredients(recipe_id, data[:ingredients])
@@ -871,5 +873,9 @@ class DatabasePersistence
 
       values << ')'
     end.join(', ')
+  end
+
+  def hh_mm_to_cook_time(hours, minutes)
+    hours + ':' + minutes
   end
 end

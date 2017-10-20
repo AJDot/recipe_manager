@@ -60,9 +60,8 @@ def get_recipe_form_data(params)
   {
     name: params[:name].strip,
     description: params[:description],
-    cook_time: "#{params[:hours]}:#{params[:minutes]}:00",
-    # hours: params[:hours],
-    # minutes: params[:minutes],
+    hours: params[:hours],
+    minutes: params[:minutes],
     ethnicities: process_detail(params[:ethnicities]),
     categories: process_detail(params[:categories]),
     ingredients: process_detail(params[:ingredients]),
@@ -99,6 +98,21 @@ def recipe_name_error(recipe_id, name)
   end
 end
 
+def cook_time_error(hours, minutes)
+  if hours.empty? || minutes.empty?
+    'Cook time entries must be 0 or greater.'
+  elsif [hours, minutes].any? { |duration| !/\A\d*\Z/.match? duration }
+    'Cook time contains invalid characters. ' +
+      'Times must be positive whole numbers.'
+  elsif !(0..59).cover? minutes.to_i
+    'Cook time minutes must be between 0 and 59.'
+  end
+end
+
+def recipe_form_errors(recipe_id, full_recipe)
+  recipe_name_error(recipe_id, full_recipe[:name]) ||
+    cook_time_error(full_recipe[:hours], full_recipe[:minutes])
+end
 
 helpers do
   # Gather values of key from each hash in an array of hashes
@@ -162,7 +176,7 @@ end
 post '/recipe/create' do
   @new_data = get_recipe_form_data(params)
 
-  error = recipe_name_error(nil, @new_data[:name])
+  error = recipe_form_errors(nil, @new_data)
   if error
     session[:error] = error
     status 422
@@ -186,10 +200,11 @@ post '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
   @new_data = get_recipe_form_data(params)
 
-  error = recipe_name_error(@recipe_id, @new_data[:name])
+  error = recipe_form_errors(@recipe_id, @new_data)
   if error
     session[:error] = error
     status 422
+    @full_recipe = @storage.full_recipe(@recipe_id)
     erb :edit_recipe, layout: :layout
   else
     @storage.update_recipe(@recipe_id, @new_data)
@@ -199,7 +214,6 @@ post '/recipe/:recipe_id' do
       @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
       save_image(new_image[:filename], new_image[:tempfile].path)
     end
-
     session[:success] = "#{@new_data[:name]} was successfully updated."
     redirect "/recipe/#{@recipe_id}"
   end

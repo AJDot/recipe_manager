@@ -9,7 +9,7 @@
   </ul>
 <% end %>
 
-<form class="edit-recipe" action="/recipe/create" method="post" enctype="multipart/form-data">
+<form class="edit-recipe" action="/recipe/create" method="post" enctype="multipart/form-data" novalidate>
   <h2>Create Recipe</h2>
   <input class="btn" type="submit" value="Create" />
   <dl class="image">
@@ -33,11 +33,11 @@
     <dt><label for="hours">Cook Time</label></dt>
     <dd>
       <h3>Hours</h3>
-      <input type="number" name="hours" id="hours" value="<%= params[:hours] || 0 %>" />
+      <input type="number" name="hours" id="hours" value="<%= params[:hours] || 0 %>" min="0" />
     </dd>
     <dd>
       <h3>Minutes</h3>
-      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || 0 %>" />
+      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || 0 %>" min="0" max="59" />
     </dd>
   </dl>
   <dl class="ethnicities">

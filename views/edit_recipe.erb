@@ -16,7 +16,7 @@
   </ul>
 <% end %>
 
-<form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data">
+<form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data" novalidate>
   <h2>Edit Recipe: <%= params[:name] || @full_recipe[:name] %></h2>
   <input class="btn" type="submit" value="Update Recipe" placeholder="My Super Awesome Recipe" />
   <dl class="image">
@@ -45,11 +45,11 @@
     <dt><label for="hours">Cook Time</label></dt>
     <dd>
       <h3>Hours</h3>
-      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @full_recipe[:cook_time].hours || 0 %>" />
+      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @full_recipe[:cook_time].hours || 0 %>" min="0" />
     </dd>
     <dd>
       <h3>Minutes</h3>
-      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @full_recipe[:cook_time].minutes || 0 %>" />
+      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @full_recipe[:cook_time].minutes || 0 %>" min="0" max="59" />
     </dd>
   </dl>
   <dl class="ethnicities">
