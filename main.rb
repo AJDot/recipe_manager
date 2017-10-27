@@ -8,9 +8,7 @@ require_relative './lib/cooktime'
 
 ################################################################################
 # FIXME: Add oven_temp and cook_time to database
-# FIXME: Add check to ensure cook_time minutes are 0-59
-# FIXME: Add check to ensure cook_time hours are >= 0
-# FIXME: Add check to ensure cook_time total is >= 00:00
+# FIXME: Add prep_time to database
 # FIXME: Write tests for cook_time inputs and errors
 # FIXME: Write tests for bad recipe id in urls
 # FIXME: Use JS once learned? Scale recipes
@@ -60,8 +58,8 @@ def get_recipe_form_data(params)
   {
     name: params[:name].strip,
     description: params[:description],
-    hours: params[:hours],
-    minutes: params[:minutes],
+    hours: params[:hours] || '0',
+    minutes: params[:minutes] || '0',
     ethnicities: process_detail(params[:ethnicities]),
     categories: process_detail(params[:categories]),
     ingredients: process_detail(params[:ingredients]),

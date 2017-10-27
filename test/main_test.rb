@@ -168,6 +168,8 @@ class RecipeManagerTest < Minitest::Test
     recipe_data = {
       name: 'Test Recipe 1',
       description: 'Test recipe description 1',
+      hours: '1',
+      minutes: '2',
       ethnicities: "e1\\r\\ne2",
       categories: "c1\\r\\nc2",
       ingredients: "i1\\r\\ni2",
@@ -183,6 +185,8 @@ class RecipeManagerTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
     assert_includes last_response.body, recipe_data[:description]
+    cook_time = "#{recipe_data[:hours]} h #{recipe_data[:minutes]} m"
+    assert_includes last_response.body, cook_time
     recipe_data[:ethnicities].split(/\r?\n/).each do |eth|
       assert_includes last_response.body, "#{eth}</li>"
     end
@@ -220,10 +224,36 @@ class RecipeManagerTest < Minitest::Test
     assert_includes last_response.body, 'Recipe name must be between 1 and 100 characters.'
   end
 
+  def test_create_recipe_empty_cook_time_error
+    recipe_data = { name: 'Test Recipe 1', hours: '', minutes: '' }
+
+    post '/recipe/create', recipe_data
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Cook time entries must be 0 or greater.'
+  end
+
+  def test_create_recipe_invalid_cook_time_error
+    recipe_data = { name: 'Test Recipe 1', hours: 'invalid', minutes: 'cook time' }
+
+    post '/recipe/create', recipe_data
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Cook time contains invalid characters. Times must be positive whole numbers.'
+  end
+
+  def test_create_recipe_minutes_out_of_range_cook_time_error
+    recipe_data = { name: 'Test Recipe 1', hours: '1', minutes: '75' }
+
+    post '/recipe/create', recipe_data
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, 'Cook time minutes must be between 0 and 59.'
+  end
+
   def test_edit_recipe
     recipe_data = {
       name: 'Test Recipe 1',
       description: 'Test recipe description 1',
+      hours: '1',
+      minutes: '2',
       ethnicities: "e1\\r\\ne2",
       categories: "c1\\r\\nc2",
       ingredients: "i1\\r\\ni2",
@@ -241,6 +271,7 @@ class RecipeManagerTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
     assert_includes last_response.body, recipe_data[:description]
+    # assert_includes last_response.body, "#{recipe_data[:hours]} h #{recipe_data[:minutes]} m"
     recipe_data[:ethnicities].split(/\r?\n/).each do |eth|
       assert_includes last_response.body, "#{eth}</li>"
     end

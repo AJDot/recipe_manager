@@ -484,7 +484,7 @@ textarea:focus {
   box-sizing: border-box;
 }
 
-dl.ethnicities::before {
+dl.description::before {
   content: "";
   display: block;
   clear: both;

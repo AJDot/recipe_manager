@@ -160,7 +160,9 @@ ALTER TABLE notes OWNER TO ajdot;
 CREATE TABLE recipes (
     id integer NOT NULL,
     name character varying(100) NOT NULL,
-    description text DEFAULT 'No description provided'::text
+    description text,
+    cook_time interval hour to minute,
+    CONSTRAINT cook_time_chk CHECK ((cook_time >= '00:00:00'::interval))
 );
 
 
@@ -248,99 +250,6 @@ ALTER TABLE ONLY recipes ALTER COLUMN id SET DEFAULT nextval('recipes_id_seq'::r
 
 
 --
--- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY categories (id, name) FROM stdin;
-\.
-
-
---
--- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ajdot
---
-
-SELECT pg_catalog.setval('categories_id_seq', 1, false);
-
-
---
--- Data for Name: ethnicities; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY ethnicities (id, name) FROM stdin;
-\.
-
-
---
--- Name: ethnicities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ajdot
---
-
-SELECT pg_catalog.setval('ethnicities_id_seq', 1, false);
-
-
---
--- Data for Name: images; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY images (recipe_id, img_number, img_filename) FROM stdin;
-\.
-
-
---
--- Data for Name: ingredients; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY ingredients (recipe_id, ing_number, description, complete) FROM stdin;
-\.
-
-
---
--- Data for Name: notes; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY notes (recipe_id, note_number, description) FROM stdin;
-\.
-
-
---
--- Data for Name: recipes; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY recipes (id, name, description) FROM stdin;
-\.
-
-
---
--- Data for Name: recipes_categories; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY recipes_categories (recipe_id, category_id) FROM stdin;
-\.
-
-
---
--- Data for Name: recipes_ethnicities; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY recipes_ethnicities (recipe_id, ethnicity_id) FROM stdin;
-\.
-
-
---
--- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: ajdot
---
-
-SELECT pg_catalog.setval('recipes_id_seq', 2, true);
-
-
---
--- Data for Name: steps; Type: TABLE DATA; Schema: public; Owner: ajdot
---
-
-COPY steps (recipe_id, step_number, description, complete) FROM stdin;
-\.
-
-
---
 -- Name: categories_pkey; Type: CONSTRAINT; Schema: public; Owner: ajdot
 --
 
@@ -349,11 +258,27 @@ ALTER TABLE ONLY categories
 
 
 --
+-- Name: category_name_key; Type: CONSTRAINT; Schema: public; Owner: ajdot
+--
+
+ALTER TABLE ONLY categories
+    ADD CONSTRAINT category_name_key UNIQUE (name);
+
+
+--
 -- Name: ethnicities_pkey; Type: CONSTRAINT; Schema: public; Owner: ajdot
 --
 
 ALTER TABLE ONLY ethnicities
     ADD CONSTRAINT ethnicities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ethnicity_name_key; Type: CONSTRAINT; Schema: public; Owner: ajdot
+--
+
+ALTER TABLE ONLY ethnicities
+    ADD CONSTRAINT ethnicity_name_key UNIQUE (name);
 
 
 --

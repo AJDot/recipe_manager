@@ -15,7 +15,9 @@
     <h1><%= @full_recipe[:name] %></h1>
 
     <ul>
-      <li>Cook Time: <%= @full_recipe[:cook_time].form_hh_mm %></li>
+      <% unless @full_recipe[:cook_time].interval == '00:00' %>
+        <li>Cook Time: <%= @full_recipe[:cook_time].form_hh_mm %></li>
+      <% end %>
     </ul>
 
     <ul class="ethnicities">

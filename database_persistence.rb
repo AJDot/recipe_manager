@@ -21,7 +21,7 @@ class DatabasePersistence
     @logger.info "#{statement}: #{params}" if @logger
 
     # Quiet the numerous outputs from psql when testing
-    # @db.exec_params("SET client_min_messages = ERROR") if Sinatra::Base.test?
+    @db.exec_params("SET client_min_messages = ERROR") if Sinatra::Base.test?
 
     @db.exec_params(statement, params)
   end
@@ -174,24 +174,6 @@ class DatabasePersistence
     query(sql_insert, *values)
   end
 
-  # def remove_recipe_ingredient(recipe_id, ing_id)
-  #   sql = <<~SQL
-  #     DELETE FROM recipes_ingredients
-  #     WHERE (recipe_id, ingredient_id) = ($1, $2)
-  #   SQL
-  #
-  #   query(sql, recipe_id, ing_id)
-  # end
-
-  # def destroy_ingredient(recipe_id, ing_id)
-  #   sql = <<~SQL
-  #     DELETE FROM ingredients
-  #     WHERE (recipe_id, ing_number) = ($1, $2)
-  #   SQL
-  #
-  #   query(sql, recipe_id, ing_id)
-  # end
-
   def destroy_recipe_ingredients(recipe_id)
     sql_delete = <<~SQL
       DELETE FROM ingredients
@@ -215,65 +197,6 @@ class DatabasePersistence
 
     query(sql, ing_data)[0]['id'].to_i
   end
-
-  # FOR DATABASE VERSION 1
-  ########################
-  #
-  # def recipe_ingredients(recipe_id)
-  #   sql = <<~SQL
-  #     SELECT * FROM ingredients AS i
-  #     INNER JOIN recipes_ingredients AS ri ON i.id = ri.ingredient_id
-  #     WHERE ri.recipe_id = $1
-  #   SQL
-  #
-  #   result = query(sql, recipe_id)
-  #   result.map do |tuple|
-  #     ingredient_tuple_to_hash(tuple)
-  #   end
-  # end
-  #
-  # def add_recipe_ingredients(recipe_id, *ings)
-  #   # add ingredient to database if it does not exist
-  #   ing_names = ings.map { |ing| ing[:name] }
-  #   add_ingredients(*ing_names)
-  #
-  #   # attach ingredient id to each ingredient
-  #   ings.each { |ing| ing[:id] = find_ingredient_id(ing[:name]) }
-  #
-  #   # reject if already associated with recipe
-  #   ings.reject! { |ing| recipe_ingredient_exist?(recipe_id, ing[:id]) }
-  #
-  #   # return if all ingredients are already associated with recipe
-  #   return if ings.empty?
-  #
-  #   sql_insert = <<~SQL
-  #     INSERT INTO recipes_ingredients
-  #     (recipe_id, ingredient_id, amount, unit) VALUES
-  #     #{sql_placeholders(ings.size, 4)}
-  #   SQL
-  #
-  #   ings_arrays = ings.map do |ing|
-  #     [ing[:id], ing[:amount], ing[:unit]]
-  #   end
-  #
-  #   values = [recipe_id].product(ings_arrays).flatten
-  #
-  #   query(sql_insert, *values)
-  # end
-  #
-  # def remove_recipe_ingredient(recipe_id, ing_id)
-  #   sql = <<~SQL
-  #     DELETE FROM recipes_ingredients
-  #     WHERE (recipe_id, ingredient_id) = ($1, $2)
-  #   SQL
-  #
-  #   query(sql, recipe_id, ing_id)
-  # end
-  #
-  # def destroy_ingredient(ing_id)
-  #   return unless ingredient_exists?(id: ing_id)
-  #   query('DELETE FROM ingredients WHERE id = $1', ing_id)
-  # end
 
   # CATEGORIES
 
@@ -876,6 +799,8 @@ class DatabasePersistence
   end
 
   def hh_mm_to_cook_time(hours, minutes)
+    hours = hours || '0'
+    minutes = minutes || '0'
     hours + ':' + minutes
   end
 end

@@ -52,7 +52,15 @@
       <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @full_recipe[:cook_time].minutes || 0 %>" min="0" max="59" />
     </dd>
   </dl>
-  <dl class="ethnicities">
+  <dl class="description">
+    <dt><label for="description">Description</label></dt>
+    <dd>
+      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%==
+        params[:description] || @full_recipe[:description]
+      %></textarea>
+    </dd>
+  </dl>
+  <dl>
     <dt><label for="ethnicities">Ethnicities</label></dt>
     <dd>
       <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
@@ -65,14 +73,6 @@
     <dd>
       <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
         params[:categories] || pluck_on_newlines(@full_recipe[:categories], :name)
-      %></textarea>
-    </dd>
-  </dl>
-  <dl>
-    <dt><label for="description">Description</label></dt>
-    <dd>
-      <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%==
-        params[:description] || @full_recipe[:description]
       %></textarea>
     </dd>
   </dl>
