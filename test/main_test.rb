@@ -43,6 +43,10 @@ class RecipeManagerTest < Minitest::Test
     @storage.query(sql_clean)
   end
 
+  def session
+    last_request.env["rack.session"]
+  end
+
   def test_view_recipe_cards
     recipe_data = {
       name: 'Test Recipe 1',
@@ -225,7 +229,8 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_create_recipe_empty_cook_time_error
-    recipe_data = { name: 'Test Recipe 1', hours: '', minutes: '' }
+    recipe_data = { name: 'Test Recipe 1',
+                    hours: '', minutes: '' }
 
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
@@ -233,11 +238,14 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_create_recipe_invalid_cook_time_error
-    recipe_data = { name: 'Test Recipe 1', hours: 'invalid', minutes: 'cook time' }
+    recipe_data = { name: 'Test Recipe 1',
+                    hours: 'invalid', minutes: 'cook time' }
 
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
-    assert_includes last_response.body, 'Cook time contains invalid characters. Times must be positive whole numbers.'
+    error_message = 'Cook time contains invalid characters. ' \
+      'Times must be positive whole numbers.'
+    assert_includes last_response.body, error_message
   end
 
   def test_create_recipe_minutes_out_of_range_cook_time_error
@@ -305,5 +313,15 @@ class RecipeManagerTest < Minitest::Test
     assert_equal 200, last_response.status
     refute_includes last_response.body, "#{recipe_data[:name]}</h2>"
     assert_includes last_response.body, "#{recipe_data[:name]} was successfully deleted."
+  end
+
+  def test_load_recipe_when_id_not_found
+    get '/recipe/1'
+    assert_equal 302, last_response.status
+    assert_equal 'The specified recipe was not found.', session[:error]
+
+    get '/recipe/1/edit'
+    assert_equal 302, last_response.status
+    assert_equal 'The specified recipe was not found.', session[:error]
   end
 end

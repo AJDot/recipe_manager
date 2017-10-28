@@ -7,10 +7,9 @@ require_relative './database_persistence'
 require_relative './lib/cooktime'
 
 ################################################################################
-# FIXME: Add oven_temp and cook_time to database
+# FIXME: Add oven_temp to database
 # FIXME: Add prep_time to database
 # FIXME: Write tests for cook_time inputs and errors
-# FIXME: Write tests for bad recipe id in urls
 # FIXME: Use JS once learned? Scale recipes
 # FIXME: Use JS once learned? Find or create function to scale numbers and output most appropriate form of number (given units of number)
 # FIXME: Use JS once learned? Add recipe card sorting feature
@@ -18,6 +17,7 @@ require_relative './lib/cooktime'
 # FIXME: Use JS once learned? Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
 # FIXME: Use JS once learned? Add feature to 'complete' ingredients and directions
 # FIXME: Add catches for bad urls (ex: bad recipe id)
+# FIXME: Create Recipe class?
 ################################################################################
 
 configure do
@@ -100,8 +100,8 @@ def cook_time_error(hours, minutes)
   if hours.empty? || minutes.empty?
     'Cook time entries must be 0 or greater.'
   elsif [hours, minutes].any? { |duration| !/\A\d*\Z/.match? duration }
-    'Cook time contains invalid characters. ' +
-      'Times must be positive whole numbers.'
+    'Cook time contains invalid characters. ' \
+    'Times must be positive whole numbers.'
   elsif !(0..59).cover? minutes.to_i
     'Cook time minutes must be between 0 and 59.'
   end
