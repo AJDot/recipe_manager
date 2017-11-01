@@ -45,6 +45,7 @@ class DatabasePersistence
     recipe = recipe(recipe_id)
     return unless recipe
     {
+      id: recipe_id,
       name: recipe[:name],
       description: recipe[:description],
       cook_time: recipe[:cook_time],

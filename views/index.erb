@@ -13,21 +13,21 @@
   <% @recipes.each do |recipe| %>
     <li>
       <article>
-        <h1><%= recipe[:name] %></h1>
+        <h1><%= recipe.name %></h1>
         <section>
-          <% if recipe[:img_filename] %>
-            <img src="../images/<%= recipe[:img_filename] %>" alt="<%= recipe[:name] %>" />
+          <% if recipe.img_filename %>
+            <img src="../images/<%= recipe.img_filename %>" alt="<%= recipe.name %>" />
           <% else %>
             <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
           <% end %>
           <div class="content">
-            <a class="view-recipe" href="/recipe/<%= recipe[:recipe_id] %>"><i class="material-icons">receipt</i>View Recipe</a>
+            <a class="view-recipe" href="/recipe/<%= recipe.id %>"><i class="material-icons">receipt</i>View Recipe</a>
             <ul class="categories">
-              <% recipe[:categories].each do |category| %>
+              <% recipe.categories.each do |category| %>
                 <li><%= category[:name] %></li>
               <% end %>
             </ul>
-            <p><%= recipe[:description] %></p>
+            <p><%= recipe.description %></p>
           </div>
         </section>
       </article>

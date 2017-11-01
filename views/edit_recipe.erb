@@ -9,7 +9,7 @@
       <span class="destroy">
         <form action="/recipe/<%= @recipe_id %>/destroy" method="post">
           <input class="delete" id="delete" type="submit" value="Delete Recipe" />
-          <input type="hidden" name="name" value="<%= @full_recipe[:name] %>" />
+          <input type="hidden" name="name" value="<%= @recipe.name %>" />
         </form>
       </span>
     </li>
@@ -17,16 +17,16 @@
 <% end %>
 
 <form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data" novalidate>
-  <h2>Edit Recipe: <%= params[:name] || @full_recipe[:name] %></h2>
+  <h2>Edit Recipe: <%= params[:name] || @recipe.name %></h2>
   <input class="btn" type="submit" value="Update Recipe" placeholder="My Super Awesome Recipe" />
   <dl class="image">
     <dt>
-      <% if params[:current_image] || @full_recipe[:img_filename] %>
-        <img src="/images/<%= params[:current_image] || @full_recipe[:img_filename] %>" alt="<%= params[:current_image] || @full_recipe[:name] %>" />
+      <% if params[:current_image] || @recipe.img_filename %>
+        <img src="/images/<%= params[:current_image] || @recipe.img_filename %>" alt="<%= params[:current_image] || @recipe.name %>" />
       <% else %>
         <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' />
       <% end %>
-      <input type="hidden" name="current_image" value="<%= params[:current_image] || @full_recipe[:img_filename] %>" />
+      <input type="hidden" name="current_image" value="<%= params[:current_image] || @recipe.img_filename %>" />
     </dt>
     <dd>
       <label class="choose-file btn">
@@ -38,25 +38,25 @@
   <dl class="name">
     <dt><label for="name">Name</label></dt>
     <dd>
-      <input type="text" name="name" id="name" value="<%= params[:name] || @full_recipe[:name] %>" />
+      <input type="text" name="name" id="name" value="<%= params[:name] || @recipe.name %>" />
     </dd>
   </dl>
   <dl class="cook-time">
     <dt><label for="hours">Cook Time</label></dt>
     <dd>
       <h3>Hours</h3>
-      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @full_recipe[:cook_time].hours || 0 %>" min="0" />
+      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @recipe.cook_time.hours || 0 %>" min="0" />
     </dd>
     <dd>
       <h3>Minutes</h3>
-      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @full_recipe[:cook_time].minutes || 0 %>" min="0" max="59" />
+      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @recipe.cook_time.minutes || 0 %>" min="0" max="59" />
     </dd>
   </dl>
   <dl class="description">
     <dt><label for="description">Description</label></dt>
     <dd>
       <textarea name="description" id="description" cols=80 rows=10 placeholder="Enter recipe description"><%==
-        params[:description] || @full_recipe[:description]
+        params[:description] || @recipe.description
       %></textarea>
     </dd>
   </dl>
@@ -64,7 +64,7 @@
     <dt><label for="ethnicities">Ethnicities</label></dt>
     <dd>
       <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
-        params[:ethnicities] || pluck_on_newlines(@full_recipe[:ethnicities], :name)
+        params[:ethnicities] || pluck_on_newlines(@recipe.ethnicities, :name)
       %></textarea>
     </dd>
   </dl>
@@ -72,7 +72,7 @@
     <dt><label for="categories">Categories</label></dt>
     <dd>
       <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
-        params[:categories] || pluck_on_newlines(@full_recipe[:categories], :name)
+        params[:categories] || pluck_on_newlines(@recipe.categories, :name)
       %></textarea>
     </dd>
   </dl>
@@ -80,7 +80,7 @@
     <dt><label for="ingredients">Ingredients</label></dt>
     <dd>
       <textarea name="ingredients" id="ingredients" cols=80 rows=10 placeholder="Put each ingredient on its own line."><%==
-        params[:ingredients] || pluck_on_newlines(@full_recipe[:ingredients], :description)
+        params[:ingredients] || pluck_on_newlines(@recipe.ingredients, :description)
       %></textarea>
     </dd>
   </dl>
@@ -88,7 +88,7 @@
     <dt><label for="steps">Directions</label></dt>
     <dd>
       <textarea name="steps" id="steps" cols=80 rows=10 placeholder="Put each step on its own line."><%==
-        params[:steps] || pluck_on_newlines(@full_recipe[:steps], :description)
+        params[:steps] || pluck_on_newlines(@recipe.steps, :description)
       %></textarea>
     </dd>
   </dl>
@@ -96,7 +96,7 @@
     <dt><label for="notes">Notes</label></dt>
     <dd>
       <textarea name="notes" id="notes" cols=80 rows=10 placeholder="Put each note on its own line."><%==
-        params[:notes] || pluck_on_newlines(@full_recipe[:notes], :description)
+        params[:notes] || pluck_on_newlines(@recipe.notes, :description)
       %></textarea>
     </dd>
   </dl>

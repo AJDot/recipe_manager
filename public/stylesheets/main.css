@@ -340,6 +340,15 @@ ul.card-list .content p {
   margin-top: 10px;
 }
 
+.recipe .ingredients > li,
+.recipe .steps > li {
+  cursor: default;
+}
+
+.strike-through {
+  text-decoration-line: line-through;
+}
+
 /*
 *************************
   EDIT RECIPE
@@ -405,6 +414,9 @@ textarea {
   resize: vertical;
 }
 
+input[type="text"]:hover,
+input[type="number"]:hover,
+textarea:hover,
 input[type="text"]:focus,
 input[type="number"]:focus,
 textarea:focus {

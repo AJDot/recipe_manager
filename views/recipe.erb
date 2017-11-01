@@ -7,37 +7,37 @@
 
 <article class="recipe">
   <header>
-    <% if @full_recipe[:img_filename] %>
-      <img src="/images/<%= @full_recipe[:img_filename] %>" alt="<%= @full_recipe[:name] %>" />
+    <% if @recipe.img_filename %>
+      <img src="/images/<%= @recipe.img_filename %>" alt="<%= @recipe.name %>" />
     <% else %>
       <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='#' />
     <% end %>
-    <h1><%= @full_recipe[:name] %></h1>
+    <h1><%= @recipe.name %></h1>
 
     <ul>
-      <% unless @full_recipe[:cook_time].interval == '00:00' %>
-        <li>Cook Time: <%= @full_recipe[:cook_time].form_hh_mm %></li>
+      <% unless @recipe.cook_time.interval == '00:00' %>
+        <li>Cook Time: <%= @recipe.cook_time.form_hh_mm %></li>
       <% end %>
     </ul>
 
     <ul class="ethnicities">
-      <% @full_recipe[:ethnicities].each do |eth| %>
+      <% @recipe.ethnicities.each do |eth| %>
         <li><%= eth[:name] %></li>
       <% end %>
     </ul>
     <ul class="categories">
-      <% @full_recipe[:categories].each do |cat| %>
+      <% @recipe.categories.each do |cat| %>
         <li><%= cat[:name] %></li>
       <% end %>
     </ul>
-    <% if @full_recipe[:description] != 'No description provided' %>
-      <p><%= @full_recipe[:description] %></p>
+    <% if @recipe.description != 'No description provided' %>
+      <p><%= @recipe.description %></p>
     <% end %>
   </header>
   <section>
     <h2>Ingredients</h2>
     <ul class="ingredients">
-      <% @full_recipe[:ingredients].each do |ing| %>
+      <% @recipe.ingredients.each do |ing| %>
         <li><%= ing[:description] %></li>
       <% end %>
     </ul>
@@ -45,7 +45,7 @@
   <section>
     <h2>Directions</h2>
     <ol class="steps">
-      <% @full_recipe[:steps].each do |step| %>
+      <% @recipe.steps.each do |step| %>
         <li><%= step[:description] %></li>
       <% end %>
     </ol>
@@ -53,7 +53,7 @@
   <section>
     <h2>Notes</h2>
     <ul class="notes">
-      <% @full_recipe[:notes].each do |note| %>
+      <% @recipe.notes.each do |note| %>
         <li><%= note[:description] %></li>
       <% end %>
     </ul>

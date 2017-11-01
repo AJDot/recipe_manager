@@ -271,6 +271,7 @@ class RecipeManagerTest < Minitest::Test
 
     @storage.create_recipe(recipe_data)
     recipe_id = @storage.find_recipe_id(recipe_data[:name])
+    recipe_data[:recipe_id] = recipe_id
 
     post "/recipe/#{recipe_id}", recipe_data
     assert_equal 302, last_response.status

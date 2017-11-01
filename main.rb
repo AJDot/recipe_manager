@@ -5,8 +5,10 @@ require 'pry'
 
 require_relative './database_persistence'
 require_relative './lib/cooktime'
+require_relative './lib/recipe'
 
 ################################################################################
+                  # FIXME: Create Recipe class? - continue doing this
 # FIXME: Add oven_temp to database
 # FIXME: Add prep_time to database
 # FIXME: Write tests for cook_time inputs and errors
@@ -17,7 +19,6 @@ require_relative './lib/cooktime'
 # FIXME: Use JS once learned? Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
 # FIXME: Use JS once learned? Add feature to 'complete' ingredients and directions
 # FIXME: Add catches for bad urls (ex: bad recipe id)
-# FIXME: Create Recipe class?
 ################################################################################
 
 configure do
@@ -29,6 +30,8 @@ end
 configure(:development) do
   require 'sinatra/reloader'
   also_reload 'database_persistence.rb'
+  also_reload 'lib/cooktime.rb'
+  also_reload 'lib/recipe.rb'
 end
 
 before do
@@ -74,11 +77,7 @@ def process_detail(detail)
 end
 
 def load_recipe(id)
-  full_recipe = @storage.full_recipe(id)
-  if full_recipe
-    full_recipe[:cook_time] = CookTime.new(full_recipe[:cook_time])
-    return full_recipe
-  end
+  return Recipe.new(@storage.full_recipe(id)) if @storage.recipe(id)
 
   session[:error] = "The specified recipe was not found."
   redirect "/"
@@ -86,12 +85,12 @@ def load_recipe(id)
 end
 
 def recipe_name_error(recipe_id, name)
-  recipes = @storage.recipes
-  if !(1..100).cover? name.size
+  this_recipe = Recipe.new({ recipe_id: recipe_id, name: name })
+  recipes = @storage.recipes.map { |recipe| Recipe.new(recipe) }
+  recipes.reject! { |recipe| recipe == this_recipe }
+  if !(1..100).cover? this_recipe.name.size
     'Recipe name must be between 1 and 100 characters.'
-  elsif recipes.any? do |recipe|
-          recipe[:name] == name && recipe[:recipe_id] != recipe_id
-        end
+  elsif recipes.any? { |recipe| this_recipe.name == recipe.name }
     'Recipe name must be unique.'
   end
 end
@@ -107,9 +106,9 @@ def cook_time_error(hours, minutes)
   end
 end
 
-def recipe_form_errors(recipe_id, full_recipe)
-  recipe_name_error(recipe_id, full_recipe[:name]) ||
-    cook_time_error(full_recipe[:hours], full_recipe[:minutes])
+def recipe_form_errors(recipe_id, recipe)
+  recipe_name_error(recipe_id, recipe[:name]) ||
+    cook_time_error(recipe[:hours], recipe[:minutes])
 end
 
 helpers do
@@ -125,19 +124,18 @@ end
 
 # View recipe cards
 get '/' do
-  @recipes = @storage.recipes
+  @recipes = @storage.recipes.map { |recipe| Recipe.new(recipe) }
+  # Query all categories and image filenames
   all_categories = @storage.all_recipes_categories
   all_images = @storage.all_images
 
+  # Add correct categories and image filename to corresponding recipe
   @recipes.each do |recipe|
-    recipe[:categories] = all_categories.select do |cat|
-      recipe[:recipe_id] == cat[:recipe_id]
-    end
+    cats = all_categories.select { |cat| recipe.id == cat[:recipe_id] }
+    recipe.categories = cats
 
-    image = all_images.find() do |img|
-      recipe[:recipe_id] == img[:recipe_id]
-    end
-    recipe[:img_filename] = image && image[:img_filename]
+    image = all_images.find { |img| recipe.id == img[:recipe_id] }
+    recipe.img_filename = image && image[:img_filename]
   end
 
   erb :index, layout: :layout
@@ -151,14 +149,14 @@ end
 # View recipe details
 get '/recipe/:recipe_id' do
   @recipe_id = params[:recipe_id].to_i
-  @full_recipe = load_recipe(@recipe_id)
+  @recipe = load_recipe(@recipe_id)
   erb :recipe, layout: :layout
 end
 
 # View edit recipe form
 get '/recipe/:recipe_id/edit' do
   @recipe_id = params[:recipe_id].to_i
-  @full_recipe = load_recipe(@recipe_id)
+  @recipe = load_recipe(@recipe_id)
   erb :edit_recipe, layout: :layout
 end
 
@@ -202,7 +200,7 @@ post '/recipe/:recipe_id' do
   if error
     session[:error] = error
     status 422
-    @full_recipe = @storage.full_recipe(@recipe_id)
+    @recipe = load_recipe(@recipe_id)
     erb :edit_recipe, layout: :layout
   else
     @storage.update_recipe(@recipe_id, @new_data)
