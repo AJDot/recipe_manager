@@ -15,18 +15,18 @@
     <h1><%= @recipe.name %></h1>
 
     <ul>
-      <% unless @recipe.cook_time.interval == '00:00' %>
+      <% unless @recipe.cook_time == '00:00' %>
         <li>Cook Time: <%= @recipe.cook_time.form_hh_mm %></li>
       <% end %>
     </ul>
 
     <ul class="ethnicities">
-      <% @recipe.ethnicities.each do |eth| %>
+      <% @recipe.ethnicities do |eth| %>
         <li><%= eth[:name] %></li>
       <% end %>
     </ul>
     <ul class="categories">
-      <% @recipe.categories.each do |cat| %>
+      <% @recipe.categories do |cat| %>
         <li><%= cat[:name] %></li>
       <% end %>
     </ul>
@@ -37,7 +37,7 @@
   <section>
     <h2>Ingredients</h2>
     <ul class="ingredients">
-      <% @recipe.ingredients.each do |ing| %>
+      <% @recipe.ingredients do |ing| %>
         <li><%= ing[:description] %></li>
       <% end %>
     </ul>
@@ -45,7 +45,7 @@
   <section>
     <h2>Directions</h2>
     <ol class="steps">
-      <% @recipe.steps.each do |step| %>
+      <% @recipe.steps do |step| %>
         <li><%= step[:description] %></li>
       <% end %>
     </ol>

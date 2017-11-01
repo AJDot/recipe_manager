@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function() {
   var ingredients = document.querySelector(".ingredients");
 
   [steps, ingredients].forEach(function(parent) {
-    toggleClassEvent("click", parent, "li", "strike-through");
+    if (parent) {
+      toggleClassEvent("click", parent, "li", "strike-through");
+    }
   });
 });

@@ -20,4 +20,13 @@ class CookTime
   def to_s
     @interval
   end
+
+  def ==(other)
+    return nil if ![String, CookTime].include? other.class
+    if other.instance_of? String
+      interval == other
+    elsif other.instance_of? CookTime
+      interval == other.interval
+    end
+  end
 end

@@ -41,13 +41,13 @@
       <input type="text" name="name" id="name" value="<%= params[:name] || @recipe.name %>" />
     </dd>
   </dl>
-  <dl class="cook-time">
+  <dl class="cook-time grid grid-1-4">
     <dt><label for="hours">Cook Time</label></dt>
-    <dd>
+    <dd class="grid-1-2">
       <h3>Hours</h3>
       <input type="number" name="hours" id="hours" value="<%= params[:hours] || @recipe.cook_time.hours || 0 %>" min="0" />
     </dd>
-    <dd>
+    <dd class="grid-1-2 last">
       <h3>Minutes</h3>
       <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @recipe.cook_time.minutes || 0 %>" min="0" max="59" />
     </dd>
@@ -60,22 +60,24 @@
       %></textarea>
     </dd>
   </dl>
-  <dl>
-    <dt><label for="ethnicities">Ethnicities</label></dt>
-    <dd>
-      <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
-        params[:ethnicities] || pluck_on_newlines(@recipe.ethnicities, :name)
-      %></textarea>
-    </dd>
-  </dl>
-  <dl>
-    <dt><label for="categories">Categories</label></dt>
-    <dd>
-      <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
-        params[:categories] || pluck_on_newlines(@recipe.categories, :name)
-      %></textarea>
-    </dd>
-  </dl>
+  <div class="grid">
+    <dl class="grid-1-2">
+      <dt><label for="ethnicities">Ethnicities</label></dt>
+      <dd>
+        <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
+          params[:ethnicities] || pluck_on_newlines(@recipe.ethnicities, :name)
+        %></textarea>
+      </dd>
+    </dl>
+    <dl class="grid-1-2">
+      <dt><label for="categories">Categories</label></dt>
+      <dd>
+        <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
+          params[:categories] || pluck_on_newlines(@recipe.categories, :name)
+        %></textarea>
+      </dd>
+    </dl>
+  </div>
   <dl>
     <dt><label for="ingredients">Ingredients</label></dt>
     <dd>

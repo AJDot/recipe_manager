@@ -23,7 +23,7 @@
           <div class="content">
             <a class="view-recipe" href="/recipe/<%= recipe.id %>"><i class="material-icons">receipt</i>View Recipe</a>
             <ul class="categories">
-              <% recipe.categories.each do |category| %>
+              <% recipe.categories do |category| %>
                 <li><%= category[:name] %></li>
               <% end %>
             </ul>
