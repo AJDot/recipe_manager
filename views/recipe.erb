@@ -54,7 +54,7 @@
     <h2>Notes</h2>
     <ul class="notes">
       <% @recipe.notes.each do |note| %>
-        <li><%= note[:description] %></li>
+        <li><%== make_link(note[:description]) %></li>
       <% end %>
     </ul>
   </section>

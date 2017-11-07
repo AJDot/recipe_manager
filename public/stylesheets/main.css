@@ -3,6 +3,8 @@
 /*
   COLORS
 **********************
+  BLACK
+  #333333;
   BLUE
   #4d9ad9;
   RED
@@ -27,6 +29,11 @@ dl, dd, dt {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+a:hover {
+  font-weight: bold;
+  color: #44dda0;
 }
 
 ul, ol, p {
@@ -57,6 +64,10 @@ header, main {
   margin: 0;
   /*border: 1px solid black;
   box-sizing: border-box;*/
+}
+
+header a:hover {
+  color: inherit;
 }
 
 main::after {
@@ -117,6 +128,12 @@ input[type="submit"].btn {
 
 .header-links li {
   display: inline;
+}
+
+.header-links a,
+.header-links a:hover {
+  font-weight: normal;
+  color: inherit;
 }
 
 .header-links input[type="submit"] {
@@ -374,6 +391,12 @@ ul.card-list .content p {
 .recipe .ingredients > li,
 .recipe .steps > li {
   cursor: default;
+}
+
+.recipe .ingredients > li:hover,
+.recipe .steps > li:hover {
+  font-weight: bold;
+  color: #44dda0;
 }
 
 .strike-through {

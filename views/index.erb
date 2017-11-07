@@ -9,8 +9,15 @@
   </ul>
 <% end %>
 
+<!-- <button type="button" name="sortCardList" id="sortCardList">Sort</button> -->
+<form action="#" method="get">
+  <select class="" name="filterCategorySelect", id="filterCategorySelect">
+  </select>
+  <button type="button" name="filterByCategoryBtn" id="filterByCategoryBtn">Filter By Category</button>
+  <button type="button" name="filterByCategoryResetBtn" id="filterByCategoryResetBtn">Remove Filter</button>
+</form>
 <ul class="card-list">
-  <% @recipes.each do |recipe| %>
+  <% sort_by_name(@recipes).each do |recipe| %>
     <li>
       <article>
         <h1><%= recipe.name %></h1>

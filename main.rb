@@ -9,6 +9,8 @@ require_relative './lib/recipe'
 
 ################################################################################
                   # FIXME: Create Recipe class? - continue doing this
+# FIXME: 5 row max height on ethnicities, categories, description
+# FIXME: remove transition time for resizing textareas
 # FIXME: Add oven_temp to database
 # FIXME: Add prep_time to database
 # FIXME: Write tests for cook_time inputs and errors
@@ -119,6 +121,19 @@ helpers do
 
   def pluck_on_newlines(array, key)
     pluck(array, key).join('&#13;&#10;')
+  end
+
+  def sort_by_name(recipes)
+    # recipes.sort_by(&:name)
+    recipes.sort do |a, b|
+      a.name.upcase <=> b.name.upcase
+    end
+  end
+
+  def make_link(text)
+    # Barely tested regex to pick out URLs
+    url_regex = /(\bhttps?.+?(?=\.?\s|[,:]|$))/
+    text.gsub(url_regex, '<a href="\1" target="_blank">\1</a>')
   end
 end
 
