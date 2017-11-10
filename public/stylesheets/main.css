@@ -97,12 +97,14 @@ input[type="submit"] {
   margin: 0;
   color: #ffffff;
   background: #333333;
+  outline: none;
   border: none;
   border-radius: .5em;
   text-align: center;
   box-shadow: 1px 1px 2px rgba(0, 0, 0, .7);
   cursor: pointer;
   transition: all .1s ease;
+  box-sizing: border-box;
 }
 
 .btn:active {
@@ -176,10 +178,22 @@ input[type="submit"].btn {
   clear: both;
 }
 
+.grid.padded {
+  margin-bottom: 20px;
+}
+
 .grid > [class*="grid-"] {
   float: left;
   padding-right: 20px;
   box-sizing: border-box;
+}
+
+.grid.padded > [class*="grid-"] {
+  padding-right: 20px;
+}
+
+.grid.padded > [class*="grid-"]:last-child {
+  padding-right: 0;
 }
 
 .grid-1-2 {
@@ -199,6 +213,46 @@ input[type="submit"].btn {
   RECIPE CARDS
 *************************
 */
+
+.container {
+  padding: 20px 0 20px 20px;
+  overflow: hidden;
+}
+
+.container main {
+  overflow: hidden;
+  padding: 0;
+}
+
+.container .filters {
+  float: right;
+  position: relative;
+  width: 250px;
+  height: 100%;
+  padding: 10px;
+  margin: 0 -250px 0 40px;
+  box-sizing: border-box;
+  transition: all .5s ease-out;
+  border: 1px solid black;
+}
+
+.container .filters .drawer_toggle {
+  font-size: 24px;
+  position: absolute;
+  left: -40px;
+}
+
+.container .filters.reveal {
+  margin-right: 20px;
+}
+
+.container .filters .btn {
+  width: 100%;
+}
+
+.filters select {
+
+}
 
 ul.card-list,
 ul.card-list ul {
@@ -220,6 +274,10 @@ ul.card-list > li {
   box-sizing: border-box;
   overflow: hidden;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3);
+}
+
+ul.card-list > li.hidden {
+  display: none;
 }
 
 ul.card-list > li h1 {
@@ -447,6 +505,7 @@ label {
 input[type="text"],
 input[type="number"],
 input[type="submit"],
+select,
 textarea {
   font: inherit;
   outline: none;
@@ -454,12 +513,13 @@ textarea {
 
 input[type="text"],
 input[type="number"],
+select,
 textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #dddddd;
   border-radius: 7px;
-  transition: all .5s ease;
+  transition: background .5s ease, box-shadow .5s ease;
   box-sizing: border-box;
 }
 
@@ -470,9 +530,11 @@ textarea {
 
 input[type="text"]:hover,
 input[type="number"]:hover,
+select:hover,
 textarea:hover,
 input[type="text"]:focus,
 input[type="number"]:focus,
+select:focus,
 textarea:focus {
   background: #f8f8f8;
   box-shadow: 0 0 1px 0 #333333;

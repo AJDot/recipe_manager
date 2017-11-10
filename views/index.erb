@@ -9,34 +9,46 @@
   </ul>
 <% end %>
 
-<!-- <button type="button" name="sortCardList" id="sortCardList">Sort</button> -->
-<form action="#" method="get">
-  <select class="" name="filterCategorySelect", id="filterCategorySelect">
-  </select>
-  <button type="button" name="filterByCategoryBtn" id="filterByCategoryBtn">Filter By Category</button>
-  <button type="button" name="filterByCategoryResetBtn" id="filterByCategoryResetBtn">Remove Filter</button>
-</form>
-<ul class="card-list">
-  <% sort_by_name(@recipes).each do |recipe| %>
-    <li>
-      <article>
-        <h1><%= recipe.name %></h1>
-        <section>
-          <% if recipe.img_filename %>
-            <img src="../images/<%= recipe.img_filename %>" alt="<%= recipe.name %>" />
-          <% else %>
-            <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
-          <% end %>
-          <div class="content">
-            <a class="view-recipe" href="/recipe/<%= recipe.id %>"><i class="material-icons">receipt</i>View Recipe</a>
-            <ul class="categories">
-              <% recipe.categories do |category| %>
-                <li><%= category[:name] %></li>
+<div class="container">
+  <aside class="filters">
+    <a class="drawer_toggle" href="#"><i class="material-icons">filter</i></a>
+    <form class="grid padded" action="#" method="get">
+      <h2><label for="filterCategorySelect">Filter by Category</label></h2>
+      <select class="grid grid-1-1 padded" name="filterCategorySelect" id="filterCategorySelect">
+      </select>
+      <div class="grid-1-2">
+        <button class="btn" type="button" name="filterByCategoryBtn" id="filterByCategoryBtn">Filter</button>
+      </div>
+      <div class="grid-1-2">
+        <button class="btn" type="button" name="filterByCategoryResetBtn" id="filterByCategoryResetBtn">Remove Filter</button>
+      </div>
+    </form>
+  </aside>
+  <main>
+    <ul class="card-list">
+      <% sort_by_name(@recipes).each do |recipe| %>
+        <li>
+          <article>
+            <h1><%= recipe.name %></h1>
+            <section>
+              <% if recipe.img_filename %>
+                <img src="../images/<%= recipe.img_filename %>" alt="<%= recipe.name %>" />
+              <% else %>
+                <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
               <% end %>
-            </ul>
-            <p><%= recipe.description %></p>
-          </div>
-        </section>
-      </article>
-    </li>
-  <% end %>
+              <div class="content">
+                <a class="view-recipe" href="/recipe/<%= recipe.id %>"><i class="material-icons">receipt</i>View Recipe</a>
+                <ul class="categories">
+                  <% recipe.categories do |category| %>
+                    <li><%= category[:name] %></li>
+                  <% end %>
+                </ul>
+                <p><%= recipe.description %></p>
+              </div>
+            </section>
+          </article>
+        </li>
+      <% end %>
+    </ul>
+  </main>
+</div>

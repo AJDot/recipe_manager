@@ -16,11 +16,11 @@ require_relative './lib/recipe'
 # FIXME: Write tests for cook_time inputs and errors
 # FIXME: Use JS once learned? Scale recipes
 # FIXME: Use JS once learned? Find or create function to scale numbers and output most appropriate form of number (given units of number)
-# FIXME: Use JS once learned? Add recipe card sorting feature
 # FIXME: Use JS once learned? Add recipe card filter feature
 # FIXME: Use JS once learned? Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
 # FIXME: Use JS once learned? Add feature to 'complete' ingredients and directions
-# FIXME: Add catches for bad urls (ex: bad recipe id)
+# COMPLETE: Add "uncategorized" option in filter by category feature
+# COMPLETE: Refactored JS structure to be more organized.
 ################################################################################
 
 configure do
