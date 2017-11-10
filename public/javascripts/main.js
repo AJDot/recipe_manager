@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", function() {
         var selectUncategorized = category === "Uncategorized";
         var hasNoCats = currentCats.length === 0;
         var hasCat = currentCats.indexOf(category) !== -1;
-        if (selectUncategorized && hasNoCats || hasCat) {
+        var noFilter = category === "---";
+        if (noFilter || selectUncategorized && hasNoCats || hasCat) {
           toKeep.push(card);
         } else {
           toRemove.push(card);
@@ -78,11 +79,13 @@ document.addEventListener("DOMContentLoaded", function() {
       allCardsCategories = this.helpers.flatten(allCardsCategories);
       // collect unique categories
       var uniqueCategories = this.helpers.unique(allCardsCategories);
+      // sort alphabetically
+      uniqueCategories.sort();
       // add "Uncategorized" to list to enable filtering by recipes that
       // do not have a category
       uniqueCategories.push("Uncategorized");
-      // sort alphabetically
-      uniqueCategories.sort();
+      // add "---" to beginning of list to represent "Do Not Filter"
+      uniqueCategories.unshift("---");
 
       // construct options and add the select element
       var select = document.getElementById("filterCategorySelect");
@@ -104,7 +107,9 @@ document.addEventListener("DOMContentLoaded", function() {
     },
     bindEvents: function() {
       var filtersDrawerBtn = document.querySelector(".drawer_toggle");
-      filtersDrawerBtn.addEventListener("click", this.toggleFilterDrawer.bind(this));
+      if (filtersDrawerBtn) {
+        filtersDrawerBtn.addEventListener("click", this.toggleFilterDrawer.bind(this));
+      }
     },
     init: function() {
       this.steps = document.querySelector(".steps");
@@ -112,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function() {
       this.cardList = document.querySelector(".card-list");
       if (this.cardList) { this.cards = this.cardList.children; }
       this.sortCardList = document.getElementById("sortCardList");
-      this.filterByCategoryBtn = document.getElementById("filterByCategoryBtn");
       this.filterByCategoryResetBtn = document.getElementById("filterByCategoryResetBtn");
 
       // Feature: click to toggle strike-through on ingredients and directions
@@ -129,12 +133,14 @@ document.addEventListener("DOMContentLoaded", function() {
       // }
 
       // Feature: filter recipe cards by category
-      if (this.filterByCategoryBtn && this.cardList) {
-        filterByCategoryBtn.addEventListener("click", this.filterByCategory.bind(this))
+      var select = document.getElementById("filterCategorySelect");
+      if (select && this.cardList) {
+        select.addEventListener("change", this.filterByCategory.bind(this))
         this.populateFilterByCategory();
       }
 
       // Feature: reset recipe cards by category filter
+      this.filterByCategoryBtn = document.getElementById("filterByCategoryBtn");
       if (this.filterByCategoryResetBtn && this.cardList) {
         this.filterByCategoryResetBtn.addEventListener("click", this.resetCategoryFilter.bind(this));
       }

@@ -196,6 +196,10 @@ input[type="submit"].btn {
   padding-right: 0;
 }
 
+.grid-1-1 {
+  width: 100%;
+}
+
 .grid-1-2 {
   width: 50%;
 }
@@ -208,6 +212,67 @@ input[type="submit"].btn {
   padding-right: 0;
 }
 
+/*
+*************************
+  FORMS
+*************************
+*/
+
+dl {
+  margin: 0;
+}
+
+dd {
+  margin: 0 0 20px 0;
+}
+
+dt {
+  margin-bottom: 10px;
+}
+
+label {
+  font-size: 18px;
+  font-weight: 300;
+  padding-bottom: 10px;
+  margin: 0 0 20px 0;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  font: inherit;
+  outline: none;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+  background: #ffffff;
+  transition: background .5s ease, box-shadow .5s ease;
+  box-sizing: border-box;
+}
+
+input[type="submit"] {
+  font: inherit;
+  outline: none;
+}
+
+textarea {
+  height: 15em;
+  resize: vertical;
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover,
+select:hover,
+textarea:hover,
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  background: #f8f8f8;
+  box-shadow: 0 0 1px 0 #333333;
+}
 /*
 *************************
   RECIPE CARDS
@@ -230,16 +295,16 @@ input[type="submit"].btn {
   width: 250px;
   height: 100%;
   padding: 10px;
-  margin: 0 -250px 0 40px;
+  margin: 0 -260px 0 50px;
   box-sizing: border-box;
   transition: all .5s ease-out;
-  border: 1px solid black;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3);
 }
 
 .container .filters .drawer_toggle {
-  font-size: 24px;
+  font-size: 28px;
   position: absolute;
-  left: -40px;
+  left: -50px;
 }
 
 .container .filters.reveal {
@@ -247,11 +312,7 @@ input[type="submit"].btn {
 }
 
 .container .filters .btn {
-  width: 100%;
-}
-
-.filters select {
-
+  /*width: 100%;*/
 }
 
 ul.card-list,
@@ -483,63 +544,6 @@ ul.card-list .content p {
   border-bottom: 1px solid #dddddd;
 }
 
-dl {
-  margin: 0;
-}
-
-dd {
-  margin: 0 0 20px 0;
-}
-
-dt {
-  margin-bottom: 10px;
-}
-
-label {
-  font-size: 18px;
-  font-weight: 300;
-  padding-bottom: 10px;
-  margin: 0 0 20px 0;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="submit"],
-select,
-textarea {
-  font: inherit;
-  outline: none;
-}
-
-input[type="text"],
-input[type="number"],
-select,
-textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #dddddd;
-  border-radius: 7px;
-  transition: background .5s ease, box-shadow .5s ease;
-  box-sizing: border-box;
-}
-
-textarea {
-  height: 15em;
-  resize: vertical;
-}
-
-input[type="text"]:hover,
-input[type="number"]:hover,
-select:hover,
-textarea:hover,
-input[type="text"]:focus,
-input[type="number"]:focus,
-select:focus,
-textarea:focus {
-  background: #f8f8f8;
-  box-shadow: 0 0 1px 0 #333333;
-}
-
 .name {
   /*display: inline-block;*/
   width: 49%;
@@ -557,19 +561,13 @@ textarea:focus {
 .cook-time::after {
   clear: left;
 }
-/*
-.cook-time dd {
-  display: inline-block;
-  width: 24%;
-}
-*/
+
 .cook-time h3 {
   margin-left: .5em;
 }
 
 .image {
   float: right;
-  /*display: inline-block;*/
   width: 49%;
   padding-left: 20px;
   vertical-align: top;
