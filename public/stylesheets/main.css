@@ -143,26 +143,33 @@ input[type="submit"].btn {
   background: inherit;
 }
 
-.header-links span {
+.header-links .safe,
+.header-links .destroy,
+.header-links .cancel {
   transition: border-bottom .3s ease, text-indent .5s ease .5s;
   border-bottom: 3px solid transparent;
 }
 
-.header-links li:hover span {
+.header-links a:hover .safe,
+.header-links a:hover .destroy,
+.header-links a:hover .cancel {
   transition: border-bottom .3s ease .5s, text-indent .5s ease;
-  border-bottom: 3px solid #44dd9f;
 }
 
-.header-links li:hover span.destroy {
+.header-links a:hover .safe {
+  border-bottom-color: #44dd9f;
+}
+
+.header-links a:hover .destroy {
   border-bottom-color: #ff834e;
 }
 
-.header-links li:hover span.cancel {
+.header-links a:hover .cancel {
   border-bottom-color: #4d9ad9;
 }
 
 .header-links form {
-  display: inline;
+  display: inline-block;
 }
 
 /*
@@ -640,6 +647,50 @@ dl.description::before {
 .flash.success {
   background: #44dd9f; /* green */
 }
+
+/*
+*************************
+  DESTROY MODAL
+*************************
+*/
+
+.destroy ~ .modal-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, .3);
+}
+
+.destroy ~ .modal {
+  display: none;
+  position: absolute;
+  left: 50%;
+  z-index: 101;
+  width: 600px;
+  padding: 60px;
+  margin: 0 0 0 -300px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.destroy ~ .modal .destroy:hover {
+  border-bottom-color: #ff834e;
+}
+
+.modal .cancel {
+  float: right;
+  display: inline-block;
+  line-height: 1.4em;
+}
+
+.modal .cancel:hover {
+  border-bottom-color: #4d9ad9;
+}
+
 
 /*
 *************************

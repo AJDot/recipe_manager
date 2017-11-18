@@ -1,22 +1,36 @@
 <% content_for :header_links do %>
   <ul>
-    <li><a href="/"><i class="material-icons wiggle">view_comfy</i><span>Recipe Cards</span></a></li>
-    <li><a href="/recipe/<%= @recipe_id %>"><i class="material-icons wiggle">receipt</i><span class="cancel">Back to Recipe</span></a></li>
     <li>
-      <label class="icon" for="delete">
+      <a href="/">
+        <i class="material-icons wiggle">view_comfy</i>
+        <span class="safe">Recipe Cards</span>
+      </a>
+    </li>
+    <li>
+      <a href="/recipe/<%= @recipe_id %>">
+        <i class="material-icons wiggle">receipt</i>
+        <span class="cancel">Back to Recipe</span>
+      </a>
+    </li>
+    <li>
+      <a class="destroy" href="#">
         <i class="material-icons wiggle">delete</i>
-      </label>
-      <span class="destroy">
+        <span class="destroy">Delete Recipe</span>
+      </a>
+      <div class="modal-overlay"></div>
+      <div class="modal">
+        <h3>Are you sure?</h3>
         <form action="/recipe/<%= @recipe_id %>/destroy" method="post">
-          <input class="delete" id="delete" type="submit" value="Delete Recipe" />
+          <input class="destroy" type="submit" value="Delete Recipe" />
           <input type="hidden" name="name" value="<%= @recipe.name %>" />
         </form>
-      </span>
+        <a class="cancel" href="#">Cancel</a>
+      </div>
     </li>
   </ul>
 <% end %>
 
-<form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data" novalidate>
+<form class="edit-recipe" action="/recipe/<%= @recipe_id %>" method="post" enctype="multipart/form-data">
   <h2>Edit Recipe: <%= params[:name] || @recipe.name %></h2>
   <input class="btn" type="submit" value="Update Recipe" placeholder="My Super Awesome Recipe" />
   <dl class="image">

@@ -105,11 +105,25 @@ document.addEventListener("DOMContentLoaded", function() {
       var filtersDrawer = document.querySelector(".filters");
       filtersDrawer.classList.toggle("reveal");
     },
+    showConfirmModal: function(e) {
+      e.preventDefault();
+      var $modalDivs = $(e.currentTarget).siblings('.modal, .modal-overlay');
+      $modalDivs.fadeIn(400);
+    },
+    hideConfirmModal: function(e) {
+      e.preventDefault();
+      var $modalDivs = $(e.currentTarget).closest('.modal').add('.modal-overlay');
+      $modalDivs.fadeOut(400);
+    },
     bindEvents: function() {
       var filtersDrawerBtn = document.querySelector(".drawer_toggle");
       if (filtersDrawerBtn) {
         filtersDrawerBtn.addEventListener("click", this.toggleFilterDrawer.bind(this));
       }
+
+      console.log($('.modal').siblings('a.destroy'));
+      $('.modal').siblings('a.destroy').on('click', this.showConfirmModal.bind(this));
+      $('.modal a.cancel').on('click', this.hideConfirmModal.bind(this));
     },
     init: function() {
       this.steps = document.querySelector(".steps");
@@ -150,4 +164,4 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   App.init();
-})
+});
