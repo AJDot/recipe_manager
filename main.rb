@@ -8,14 +8,14 @@ require_relative './lib/cooktime'
 require_relative './lib/recipe'
 
 ################################################################################
-                  # FIXME: Create Recipe class? - continue doing this
-# FIXME: 5 row max height on ethnicities, categories, description
-# FIXME: remove transition time for resizing textareas
-# FIXME: Add oven_temp to database
-# FIXME: Add prep_time to database
-# FIXME: Write tests for cook_time inputs and errors
-# FIXME: Use JS once learned? Scale recipes
-# FIXME: Use JS once learned? Find or create function to scale numbers and output most appropriate form of number (given units of number)
+                  # TODO: Create Recipe class? - continue doing this
+# TODO: 5 row max height on ethnicities, categories, description
+# TODO: remove transition time for resizing textareas
+# TODO: Add oven_temp to database
+# TODO: Add prep_time to database
+# TODO: Write tests for cook_time inputs and errors
+# TODO: Use JS once learned? Scale recipes
+# TODO: Use JS once learned? Find or create function to scale numbers and output most appropriate form of number (given units of number)
 # COMPLETE: Use JS once learned? Add 'Are you sure?' to any destructive action (deleting a recipe, etc)
 # COMPLETE: Add "uncategorized" option in filter by category feature
 # COMPLETE: Refactored JS structure to be more organized.

@@ -61,44 +61,21 @@ class DatabasePersistence
   def create_recipe(data)
     return if recipe_exists?(data[:name])
 
-    # if data[:description]
-    #   sql_insert = 'INSERT INTO recipes (name, description) VALUES ($1, $2)'
-    #   query(sql_insert, data[:name], data[:description])
-    # else
-      # sql_insert = 'INSERT INTO recipes (name) VALUES ($1)'
     sql_insert = <<~SQL
       INSERT INTO recipes (name, description, cook_time) VALUES
       ($1, $2, $3)
     SQL
     cook_time = hh_mm_to_cook_time(data[:hours], data[:minutes])
     query(sql_insert, data[:name], data[:description], cook_time)
-    # end
 
     recipe_id = find_recipe_id(data[:name])
 
-    # if data.key?(:categories)
-      add_recipe_categories(recipe_id, *data[:categories])
-    # end
-
-    # if data.key?(:ethnicities)
-      add_recipe_ethnicities(recipe_id, *data[:ethnicities])
-    # end
-
-    # if data[:ingredients] && !data[:ingredients].empty?
-      add_recipe_ingredients(recipe_id, *data[:ingredients])
-    # end
-
-    # if data[:steps] && !data[:steps].empty?
-      add_recipe_steps(recipe_id, *data[:steps])
-    # end
-
-    # if data[:notes] && !data[:notes].empty?
-      add_recipe_notes(recipe_id, *data[:notes])
-    # end
-
-    # if data[:img_filename]
-      update_recipe_image(recipe_id, data[:img_filename])
-    # end
+    add_recipe_categories(recipe_id, *data[:categories])
+    add_recipe_ethnicities(recipe_id, *data[:ethnicities])
+    add_recipe_ingredients(recipe_id, *data[:ingredients])
+    add_recipe_steps(recipe_id, *data[:steps])
+    add_recipe_notes(recipe_id, *data[:notes])
+    update_recipe_image(recipe_id, data[:img_filename])
   end
 
   def update_recipe(recipe_id, data)
@@ -136,9 +113,6 @@ class DatabasePersistence
 
   # INGREDIENTS
 
-  # FOR DATABASE VERSION 2
-  ########################
-  #
   def recipe_ingredients(recipe_id)
     sql = <<~SQL
       SELECT * FROM ingredients
@@ -591,54 +565,6 @@ class DatabasePersistence
 
   # INGREDIENTS
 
-  # def ingredient_exists?(options = {})
-  #   if options[:id]
-  #     property = @db.quote_ident('id')
-  #     value = options[:id]
-  #   elsif options[:name]
-  #     property = @db.quote_ident('name')
-  #     value = options[:name]
-  #   end
-  #
-  #   sql = <<~SQL
-  #     SELECT * FROM ingredients
-  #     WHERE #{property} = $1
-  #     LIMIT 1
-  #   SQL
-  #
-  #   !query(sql, value).ntuples.zero?
-  # end
-  #
-  # def find_ingredient_id(ing_name)
-  #   sql = <<~SQL
-  #     SELECT * FROM ingredients
-  #     WHERE name = $1
-  #     LIMIT 1
-  #   SQL
-  #
-  #   query(sql, ing_name)[0]['id'].to_i
-  # end
-  #
-  # def recipe_ingredient_exist?(recipe_id, ing_id)
-  #   sql = <<~SQL
-  #     SELECT * FROM recipes_ingredients
-  #     WHERE (recipe_id, ingredient_id) = ($1, $2)
-  #   SQL
-  #   !query(sql, recipe_id, ing_id).ntuples.zero?
-  # end
-  #
-  # def add_ingredients(*ing_names)
-  #   ing_names.reject! { |ing_name| ingredient_exists?(name: ing_name) }
-  #   return if ing_names.empty?
-  #
-  #   sql = <<~SQL
-  #     INSERT INTO ingredients (name) VALUES
-  #     #{sql_placeholders(ing_names.size, 1)}
-  #   SQL
-  #
-  #   query(sql, *ing_names)
-  # end
-
   def ingredient_tuple_to_hash(tuple)
     {
       recipe_id: tuple['recipe_id'].to_i,
@@ -717,17 +643,11 @@ class DatabasePersistence
   end
 
   def recipe_ethnicity_exist?(recipe_id, eth_id)
-    # Detect with SQL
     sql = <<~SQL
       SELECT * FROM recipes_ethnicities
       WHERE (recipe_id, ethnicity_id) = ($1, $2)
     SQL
     !query(sql, recipe_id, eth_id).ntuples.zero?
-
-    # Detect with Ruby
-    # ethnicities(recipe_id).any? do |eth|
-    #   eth[:recipe_id] == recipe_id && eth[:ethnicity_id] == eth_id
-    # end
   end
 
   def add_ethnicities(*eth_names)

@@ -121,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function() {
         filtersDrawerBtn.addEventListener("click", this.toggleFilterDrawer.bind(this));
       }
 
-      console.log($('.modal').siblings('a.destroy'));
       $('.modal').siblings('a.destroy').on('click', this.showConfirmModal.bind(this));
       $('.modal a.cancel').on('click', this.hideConfirmModal.bind(this));
     },

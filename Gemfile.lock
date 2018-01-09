@@ -18,6 +18,7 @@ GEM
     pry (0.11.1)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
+    puma (3.11.0)
     rack (1.6.8)
     rack-protection (1.5.3)
       rack
@@ -47,6 +48,7 @@ DEPENDENCIES
   minitest-reporters
   pg
   pry
+  puma
   rake
   sinatra (~> 1.4.7)
   sinatra-contrib
@@ -55,4 +57,4 @@ RUBY VERSION
    ruby 2.4.0p0
 
 BUNDLED WITH
-   1.15.3
+   1.16.0

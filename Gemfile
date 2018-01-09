@@ -15,3 +15,7 @@ gem 'pry'
 
 gem 'minitest'
 gem 'minitest-reporters'
+
+group :production do
+  gem "puma"
+end
