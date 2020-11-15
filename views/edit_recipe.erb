@@ -35,17 +35,18 @@
   <input class="btn" type="submit" value="Update Recipe" placeholder="My Super Awesome Recipe" />
   <dl class="image">
     <dt>
-      <% if params[:current_image] || @recipe.img_filename %>
-        <img src="/images/<%= params[:current_image] || @recipe.img_filename %>" alt="<%= params[:current_image] || @recipe.name %>" />
+      <% if params[:image] %>
+        <img src="#" alt="<%= params[:image][:filename] %>" title="<%= params[:image][:filename] %>" id="image" />
+      <% elsif @recipe.image %>
+        <img src="/images/<%= @recipe.image.recipe_filename %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" id="image" />
       <% else %>
-        <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' />
+        <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' id="image" />
       <% end %>
-      <input type="hidden" name="current_image" value="<%= params[:current_image] || @recipe.img_filename %>" />
     </dt>
     <dd>
       <label class="choose-file btn">
         Choose File
-        <input type="file" name="image" />
+        <input type="file" name="image" data-for="#image" />
       </label>
     </dd>
   </dl>
@@ -59,11 +60,11 @@
     <dt><label for="hours">Cook Time</label></dt>
     <dd class="grid-1-2">
       <h3>Hours</h3>
-      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @recipe.cook_time.hours || 0 %>" min="0" />
+      <input type="number" name="hours" id="hours" value="<%= params[:hours] || @recipe.cook_interval.hours || 0 %>" min="0" />
     </dd>
     <dd class="grid-1-2 last">
       <h3>Minutes</h3>
-      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @recipe.cook_time.minutes || 0 %>" min="0" max="59" />
+      <input type="number" name="minutes" id="minutes" value="<%= params[:minutes] || @recipe.cook_interval.minutes || 0 %>" min="0" max="59" />
     </dd>
   </dl>
   <dl class="description">
@@ -79,7 +80,7 @@
       <dt><label for="ethnicities">Ethnicities</label></dt>
       <dd>
         <textarea name="ethnicities" id="ethnicities" cols=80 rows=10 placeholder="Put each ethnicity on its own line."><%==
-          params[:ethnicities] || pluck_on_newlines(@recipe.ethnicities, :name)
+          params[:ethnicities] || on_newlines(@recipe.ethnicities.map(&:name))
         %></textarea>
       </dd>
     </dl>
@@ -87,7 +88,7 @@
       <dt><label for="categories">Categories</label></dt>
       <dd>
         <textarea name="categories" id="categories" cols=80 rows=10 placeholder="Put each category on its own line."><%==
-          params[:categories] || pluck_on_newlines(@recipe.categories, :name)
+          params[:categories] || on_newlines(@recipe.categories.map(&:name))
         %></textarea>
       </dd>
     </dl>
@@ -96,7 +97,7 @@
     <dt><label for="ingredients">Ingredients</label></dt>
     <dd>
       <textarea name="ingredients" id="ingredients" cols=80 rows=10 placeholder="Put each ingredient on its own line."><%==
-        params[:ingredients] || pluck_on_newlines(@recipe.ingredients, :description)
+        params[:ingredients] || on_newlines(@recipe.ingredients.map(&:description))
       %></textarea>
     </dd>
   </dl>
@@ -104,15 +105,15 @@
     <dt><label for="steps">Directions</label></dt>
     <dd>
       <textarea name="steps" id="steps" cols=80 rows=10 placeholder="Put each step on its own line."><%==
-        params[:steps] || pluck_on_newlines(@recipe.steps, :description)
+        params[:steps] || on_newlines(@recipe.steps.map(&:description))
       %></textarea>
     </dd>
   </dl>
   <dl>
-    <dt><label for="notes">Notes</label></dt>
+    <dt><label for="note">Notes</label></dt>
     <dd>
-      <textarea name="notes" id="notes" cols=80 rows=10 placeholder="Put each note on its own line."><%==
-        params[:notes] || pluck_on_newlines(@recipe.notes, :description)
+      <textarea name="note" id="note" cols=80 rows=10 placeholder="Put each note on its own line."><%==
+        params[:note] || @recipe.note
       %></textarea>
     </dd>
   </dl>

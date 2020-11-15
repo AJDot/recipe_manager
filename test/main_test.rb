@@ -6,7 +6,12 @@ require 'minitest/reporters'
 require 'rack/test'
 Minitest::Reporters.use!
 
+require './config/environment'
+require 'database_cleaner'
 require_relative '../main.rb'
+
+DatabaseCleaner.strategy = :transaction
+DatabaseCleaner.clean_with(:truncation)
 
 class RecipeManagerTest < Minitest::Test
   include Rack::Test::Methods
@@ -16,31 +21,11 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def setup
-    # FileUtils.mkdir_p data_path
-
-    # function will execute queries constructed as the result of a query
-    # add this function if you see errors about execute not working
-    # CREATE OR REPLACE FUNCTION execute(text) RETURNS VOID AS $BODY$BEGIN execute $1; END;$BODY$ LANGUAGE plpgsql;
-    # Example
-    # SELECT execute('TRUNCATE ' || tablename || ' CASCADE;') FROM pg_tables WHERE schemaname = 'public' AND tablename IN ('recipes', 'categories', 'ethnicities');
-
-    @storage = DatabasePersistence.new
+    DatabaseCleaner.start
   end
 
   def teardown
-    # FileUtils.remove_dir data_path
-
-    delete_all_db_data
-  end
-
-  def delete_all_db_data
-    sql_clean = <<~SQL
-      SELECT execute('TRUNCATE ' || tablename || ' CASCADE;')
-        FROM pg_tables
-       WHERE schemaname = 'public'
-         AND tablename IN ('recipes', 'categories', 'ethnicities');
-    SQL
-    @storage.query(sql_clean)
+    DatabaseCleaner.clean
   end
 
   def session
@@ -48,15 +33,15 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_view_recipe_cards
+    test_cat_name = 'Category 1'
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      categories: [
+        Category.new(name: test_cat_name)
+      ]
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-
-    test_cat_name = 'Category 1'
-    @storage.add_recipe_categories(recipe_id, test_cat_name)
+    Recipe.create(recipe_data)
 
     get '/'
 
@@ -69,18 +54,18 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_view_recipe_details
+    test_cat_name = 'Category 1'
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      categories: [
+        Category.new(name: test_cat_name),
+      ]
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-
-    test_cat_name = 'Category 1'
-    @storage.add_recipe_categories(recipe_id, test_cat_name)
+    recipe = Recipe.create(recipe_data)
 
     # Display recipe details
-    get "/recipe/#{recipe_id}"
+    get "/recipe/#{recipe.id}"
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
@@ -89,18 +74,18 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_view_recipe_detail_ingredients
+    test_ing_info = '1 cup Ingredient 1'
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      ingredients: [
+        Ingredient.new(description: test_ing_info)
+      ]
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-
-    test_ing_info = '1 cup Ingredient 1'
-    @storage.add_recipe_ingredients(recipe_id, test_ing_info)
+    recipe = Recipe.create(recipe_data)
 
     # Display recipe details
-    get "/recipe/#{recipe_id}"
+    get "/recipe/#{recipe.id}"
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
@@ -109,18 +94,19 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_view_recipe_detail_ethnicities
+    test_eth = 'Ethnicity 1'
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      cook_time: '00:00',
+      ethnicities: [
+        Ethnicity.new(name: test_eth),
+      ]
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-
-    test_eth = 'Ethnicity 1'
-    @storage.add_recipe_ethnicities(recipe_id, test_eth)
+    recipe = Recipe.create(recipe_data)
 
     # Display recipe details
-    get "/recipe/#{recipe_id}"
+    get "/recipe/#{recipe.id}"
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
@@ -129,18 +115,18 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_view_recipe_detail_steps
+    test_step = 'Step 1'
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      steps: [
+        Step.new(description: test_step),
+      ]
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-
-    test_step = 'Step 1'
-    @storage.add_recipe_steps(recipe_id, test_step)
+    recipe = Recipe.create(recipe_data)
 
     # Display recipe details
-    get "/recipe/#{recipe_id}"
+    get "/recipe/#{recipe.id}"
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
@@ -149,18 +135,17 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_view_recipe_detail_notes
+    test_note = 'Note 1'
     recipe_data = {
       name: 'Test Recipe 1',
-      description: 'Test recipe description 1'
+      description: 'Test recipe description 1',
+      cook_time: '00:00',
+      note: test_note
     }
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-
-    test_note = 'Note 1'
-    @storage.add_recipe_notes(recipe_id, test_note)
+    recipe = Recipe.create(recipe_data)
 
     # Display recipe details
-    get "/recipe/#{recipe_id}"
+    get "/recipe/#{recipe.id}"
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, recipe_data[:name]
@@ -178,8 +163,7 @@ class RecipeManagerTest < Minitest::Test
       categories: "c1\\r\\nc2",
       ingredients: "i1\\r\\ni2",
       steps: "s1\\r\\ns2",
-      notes: "n1\\r\\nn2",
-      current_image: 'test_image.jpg'
+      note: "n1\\r\\nn2",
     }
 
     post "/recipe/create", recipe_data
@@ -203,53 +187,35 @@ class RecipeManagerTest < Minitest::Test
     recipe_data[:steps].split(/\r?\n/).each do |step|
       assert_includes last_response.body, "#{step}</li>"
     end
-    recipe_data[:notes].split(/\r?\n/).each do |note|
+    recipe_data[:note].split(/\r?\n/).each do |note|
       assert_includes last_response.body, "#{note}</li>"
     end
-    assert_includes last_response.body, recipe_data[:current_image]
     assert_includes last_response.body, "#{recipe_data[:name]} was successfully created."
   end
 
   def test_create_recipe_name_unique_error
-    recipe_data = { name: 'Test Recipe 1' }
+    recipe_data = {
+      name: 'Test Recipe 1',
+      cook_time: '00:00',
+    }
 
     post '/recipe/create', recipe_data
     assert_equal 302, last_response.status
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
-    assert_includes last_response.body, 'Recipe name must be unique.'
+    assert_includes last_response.body, 'Name must be unique'
   end
 
   def test_create_recipe_name_size_error
-    recipe_data = { name: '' }
+    recipe_data = {name: ''}
 
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
-    assert_includes last_response.body, 'Recipe name must be between 1 and 100 characters.'
-  end
-
-  def test_create_recipe_empty_cook_time_error
-    recipe_data = { name: 'Test Recipe 1',
-                    hours: '', minutes: '' }
-
-    post '/recipe/create', recipe_data
-    assert_equal 422, last_response.status
-    assert_includes last_response.body, 'Cook time entries must be 0 or greater.'
-  end
-
-  def test_create_recipe_invalid_cook_time_error
-    recipe_data = { name: 'Test Recipe 1',
-                    hours: 'invalid', minutes: 'cook time' }
-
-    post '/recipe/create', recipe_data
-    assert_equal 422, last_response.status
-    error_message = 'Cook time contains invalid characters. ' \
-      'Times must be positive whole numbers.'
-    assert_includes last_response.body, error_message
+    assert_includes last_response.body, 'Name must be between 1 and 100 characters'
   end
 
   def test_create_recipe_minutes_out_of_range_cook_time_error
-    recipe_data = { name: 'Test Recipe 1', hours: '1', minutes: '75' }
+    recipe_data = {name: 'Test Recipe 1', hours: '1', minutes: '75'}
 
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
@@ -257,7 +223,7 @@ class RecipeManagerTest < Minitest::Test
   end
 
   def test_edit_recipe
-    recipe_data = {
+    params = {
       name: 'Test Recipe 1',
       description: 'Test recipe description 1',
       hours: '1',
@@ -266,37 +232,41 @@ class RecipeManagerTest < Minitest::Test
       categories: "c1\\r\\nc2",
       ingredients: "i1\\r\\ni2",
       steps: "s1\\r\\ns2",
-      notes: "n1\\r\\nn2"
+      note: "n1\\r\\nn2"
     }
 
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
-    recipe_data[:recipe_id] = recipe_id
+    recipe_data = {
+      name: 'Test Recipe 1',
+      description: 'Test recipe description 1',
+      cook_time: '1:02',
+      note: "n1\\r\\nn2"
+    }
+    recipe = Recipe.create(recipe_data)
 
-    post "/recipe/#{recipe_id}", recipe_data
+    post "/recipe/#{recipe.id}", params
     assert_equal 302, last_response.status
 
     get last_response["Location"]
     assert_equal 200, last_response.status
-    assert_includes last_response.body, recipe_data[:name]
-    assert_includes last_response.body, recipe_data[:description]
+    assert_includes last_response.body, params[:name]
+    assert_includes last_response.body, params[:description]
     # assert_includes last_response.body, "#{recipe_data[:hours]} h #{recipe_data[:minutes]} m"
-    recipe_data[:ethnicities].split(/\r?\n/).each do |eth|
+    params[:ethnicities].split(/\r?\n/).each do |eth|
       assert_includes last_response.body, "#{eth}</li>"
     end
-    recipe_data[:categories].split(/\r?\n/).each do |cat|
+    params[:categories].split(/\r?\n/).each do |cat|
       assert_includes last_response.body, "#{cat}</li>"
     end
-    recipe_data[:ingredients].split(/\r?\n/).each do |ing|
+    params[:ingredients].split(/\r?\n/).each do |ing|
       assert_includes last_response.body, "#{ing}</li>"
     end
-    recipe_data[:steps].split(/\r?\n/).each do |step|
+    params[:steps].split(/\r?\n/).each do |step|
       assert_includes last_response.body, "#{step}</li>"
     end
-    recipe_data[:notes].split(/\r?\n/).each do |note|
+    params[:note].split(/\r?\n/).each do |note|
       assert_includes last_response.body, "#{note}</li>"
     end
-    assert_includes last_response.body, "#{recipe_data[:name]} was successfully updated."
+    assert_includes last_response.body, "#{params[:name]} was successfully updated."
   end
 
   def test_destroy_recipe
@@ -304,10 +274,10 @@ class RecipeManagerTest < Minitest::Test
       name: 'Test Recipe 1'
     }
 
-    @storage.create_recipe(recipe_data)
-    recipe_id = @storage.find_recipe_id(recipe_data[:name])
+    recipe = Recipe.create(recipe_data)
+    recipe.save(validate: false)
 
-    post "/recipe/#{recipe_id}/destroy", recipe_data
+    post "/recipe/#{recipe.id}/destroy", {}
     assert_equal 302, last_response.status
 
     get last_response["Location"]

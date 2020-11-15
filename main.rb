@@ -1,11 +1,13 @@
 require 'sinatra'
 require 'sinatra/content_for'
+require 'sinatra/activerecord'
 require 'tilt/erubis'
 require 'pry'
 
 require_relative './database_persistence'
-require_relative './lib/cooktime'
-require_relative './lib/recipe'
+require_relative 'lib/cook_time'
+require_relative 'lib/recipe'
+require_relative 'lib/core_ext/object'
 
 ################################################################################
                   # TODO: Create Recipe class? - continue doing this
@@ -32,8 +34,7 @@ end
 configure(:development) do
   require 'sinatra/reloader'
   also_reload 'database_persistence.rb'
-  also_reload 'lib/cooktime.rb'
-  also_reload 'lib/recipe.rb'
+  also_reload 'lib/**/*'
 end
 
 before do
@@ -44,83 +45,47 @@ after do
   @storage.disconnect
 end
 
-def data_path
-  if ENV['RACK_ENV'] == 'test'
-    File.expand_path("../test/public/", __FILE__)
-  else
-    File.expand_path('../public/', __FILE__)
-  end
-end
-
 def save_image(filename, file_location)
   file_destination = File.join(data_path, 'images', filename)
   FileUtils.copy(file_location, file_destination)
 end
 
 def get_recipe_form_data(params)
-  new_image = params[:image] && params[:image][:filename]
-  img_filename = new_image || params[:current_image]
   {
     name: params[:name].strip,
     description: params[:description],
-    hours: params[:hours] || '0',
-    minutes: params[:minutes] || '0',
-    ethnicities: process_detail(params[:ethnicities]),
-    categories: process_detail(params[:categories]),
-    ingredients: process_detail(params[:ingredients]),
-    steps: process_detail(params[:steps]),
-    notes: process_detail(params[:notes]),
-    img_filename: img_filename
+    cook_time: hh_mm_to_cook_time(params[:hours], params[:minutes]),
+    note: params[:note],
   }
 end
 
+def split_lines(string)
+  string.each_line.map(&:strip)
+end
+
 def process_detail(detail)
-  detail && detail.split(/\r?\n/).uniq
+  detail && detail.split(/(?:\r?\n)+/).uniq
 end
 
 def load_recipe(id)
-  return Recipe.new(@storage.full_recipe(id)) if @storage.recipe(id)
+  recipe = Recipe.find_by(id: id)
+  return recipe unless recipe.nil?
 
   session[:error] = "The specified recipe was not found."
+  status 422
   redirect "/"
   halt
 end
 
-def recipe_name_error(recipe_id, name)
-  this_recipe = Recipe.new({ recipe_id: recipe_id, name: name })
-  recipes = @storage.recipes.map { |recipe| Recipe.new(recipe) }
-  recipes.reject! { |recipe| recipe == this_recipe }
-  if !(1..100).cover? this_recipe.name.size
-    'Recipe name must be between 1 and 100 characters.'
-  elsif recipes.any? { |recipe| this_recipe.name == recipe.name }
-    'Recipe name must be unique.'
-  end
-end
-
-def cook_time_error(hours, minutes)
-  if hours.empty? || minutes.empty?
-    'Cook time entries must be 0 or greater.'
-  elsif [hours, minutes].any? { |duration| !/\A\d*\Z/.match? duration }
-    'Cook time contains invalid characters. ' \
-    'Times must be positive whole numbers.'
-  elsif !(0..59).cover? minutes.to_i
-    'Cook time minutes must be between 0 and 59.'
-  end
-end
-
-def recipe_form_errors(recipe_id, recipe)
-  recipe_name_error(recipe_id, recipe[:name]) ||
-    cook_time_error(recipe[:hours], recipe[:minutes])
-end
-
 helpers do
+
   # Gather values of key from each hash in an array of hashes
   def pluck(array, key)
     array.map { |hash| hash[key] }
   end
 
-  def pluck_on_newlines(array, key)
-    pluck(array, key).join('&#13;&#10;')
+  def on_newlines(array)
+    array.join('&#13;&#10;')
   end
 
   def sort_by_name(recipes)
@@ -131,28 +96,73 @@ helpers do
   end
 
   def make_link(text)
+    return '' if text.blank?
     # Barely tested regex to pick out URLs
     url_regex = /(\bhttps?.+?(?=\.?\s|[,:]|$))/
     text.gsub(url_regex, '<a href="\1" target="_blank">\1</a>')
+  end
+
+  def hh_mm_to_cook_time(hours, minutes)
+    hours.to_s.rjust(2, '0') + ':' + minutes.to_s.rjust(2, '0')
+  end
+
+  def add_details(recipe, params)
+    add_recipe_categories(recipe, process_detail(params[:categories]))
+    add_recipe_ethnicities(recipe, process_detail(params[:ethnicities]))
+    add_recipe_steps(recipe, process_detail(params[:steps]))
+    add_recipe_ingredients(recipe, process_detail(params[:ingredients]))
+    add_recipe_image(recipe, params[:image])
+  end
+
+  def add_categories(cat_names)
+    Array.wrap(cat_names).map { |cat_name| Category.find_or_create_by(name: cat_name) }
+  end
+
+  def add_recipe_categories(recipe, cat_names)
+    recipe.categories = add_categories(Array.wrap(cat_names))
+  end
+
+  def add_ethnicities(eth_names)
+    Array.wrap(eth_names).map { |eth_name| Ethnicity.find_or_create_by(name: eth_name) }
+  end
+
+  def add_recipe_ethnicities(recipe, eth_names)
+    recipe.ethnicities = add_ethnicities(Array.wrap(eth_names))
+  end
+
+  def add_steps(step_descriptions, recipe)
+    Array.wrap(step_descriptions).map do |desc|
+      Step.find_or_create_by(description: desc)
+    end
+  end
+
+  def add_recipe_steps(recipe, step_descriptions)
+    recipe.steps = add_steps(Array.wrap(step_descriptions), recipe)
+  end
+
+  def add_ingredients(ingredient_descriptions, recipe)
+    Array.wrap(ingredient_descriptions).map do |desc|
+      Ingredient.find_or_create_by(description: desc)
+    end
+  end
+
+  def add_recipe_ingredients(recipe, ingredient_descriptions)
+    recipe.ingredients = add_ingredients(Array.wrap(ingredient_descriptions), recipe)
+  end
+
+  def add_image(image_params)
+    Image.build(image_params)
+  end
+
+  def add_recipe_image(recipe, image_params)
+    return if image_params.nil?
+    recipe.image = add_image(image_params)
   end
 end
 
 # View recipe cards
 get '/' do
-  @recipes = @storage.recipes.map { |recipe| Recipe.new(recipe) }
-  # Query all categories and image filenames
-  all_categories = @storage.all_recipes_categories
-  all_images = @storage.all_images
-
-  # Add correct categories and image filename to corresponding recipe
-  @recipes.each do |recipe|
-    cats = all_categories.select { |cat| recipe.id == cat[:recipe_id] }
-    recipe.categories = cats
-
-    image = all_images.find { |img| recipe.id == img[:recipe_id] }
-    recipe.img_filename = image && image[:img_filename]
-  end
-
+  @recipes = Recipe.all
   erb :index, layout: :layout
 end
 
@@ -162,24 +172,28 @@ get '/recipe/create' do
 end
 
 # View recipe details
-get '/recipe/:recipe_id' do
-  @recipe_id = params[:recipe_id].to_i
-  @recipe = load_recipe(@recipe_id)
+get '/recipe/:id' do
+  @recipe_id = params[:id].to_i
+  @recipe = load_recipe(params[:id])
   erb :recipe, layout: :layout
 end
 
 # View edit recipe form
-get '/recipe/:recipe_id/edit' do
-  @recipe_id = params[:recipe_id].to_i
+get '/recipe/:id/edit' do
+  @recipe_id = params[:id].to_i
   @recipe = load_recipe(@recipe_id)
   erb :edit_recipe, layout: :layout
 end
 
 # Delete recipe
-post '/recipe/:recipe_id/destroy' do
-  @recipe_id = params[:recipe_id].to_i
-  @storage.destroy_recipe(@recipe_id)
-  session[:success] = "#{params[:name]} was successfully deleted."
+post '/recipe/:id/destroy' do
+  @recipe_id = params[:id].to_i
+  recipe = load_recipe(params[:id])
+  if recipe.destroy
+    session[:success] = "#{recipe.name} was successfully deleted."
+  else
+    session[:error] = "Unable to destroy #{recipe.name}."
+  end
   redirect '/'
 end
 
@@ -187,45 +201,31 @@ end
 post '/recipe/create' do
   @new_data = get_recipe_form_data(params)
 
-  error = recipe_form_errors(nil, @new_data)
-  if error
-    session[:error] = error
+  @recipe = Recipe.new(@new_data)
+  if @recipe.save
+    add_details(@recipe, params)
+    session[:success] = "#{@new_data[:name]} was successfully created."
+    redirect "recipe/#{@recipe.id}"
+  else
+    session[:error] = @recipe.errors.full_messages
     status 422
     erb :create_recipe, layout: :layout
-  else
-    @storage.create_recipe(@new_data)
-    @recipe_id = @storage.find_recipe_id(@new_data[:name])
-
-    new_image = params[:image]
-    if new_image
-      @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
-      save_image(new_image[:filename], new_image[:tempfile].path)
-    end
-    session[:success] = "#{@new_data[:name]} was successfully created."
-    redirect "recipe/#{@recipe_id}"
   end
 end
 
 # Edit recipe
-post '/recipe/:recipe_id' do
-  @recipe_id = params[:recipe_id].to_i
+post '/recipe/:id' do
+  @recipe_id = params[:id].to_i
   @new_data = get_recipe_form_data(params)
 
-  error = recipe_form_errors(@recipe_id, @new_data)
-  if error
-    session[:error] = error
-    status 422
-    @recipe = load_recipe(@recipe_id)
-    erb :edit_recipe, layout: :layout
+  @recipe = load_recipe(params[:id])
+  if @recipe.update(@new_data)
+    add_details(@recipe, params)
+    session[:success] = "#{@recipe.name} was successfully updated."
+    redirect "/recipe/#{@recipe.id}"
   else
-    @storage.update_recipe(@recipe_id, @new_data)
-
-    new_image = params[:image]
-    if new_image
-      @storage.update_recipe_image(@recipe_id, @new_data[:img_filename])
-      save_image(new_image[:filename], new_image[:tempfile].path)
-    end
-    session[:success] = "#{@new_data[:name]} was successfully updated."
-    redirect "/recipe/#{@recipe_id}"
+    session[:error] = @recipe.errors.full_messages
+    status 422
+    erb :edit_recipe, layout: :layout
   end
 end

@@ -1,59 +1,59 @@
-document.addEventListener("DOMContentLoaded", function() {
-  var App = {
+document.addEventListener("DOMContentLoaded", function () {
+  const App = {
     helpers: {
-      flatten: function(arrays) {
-        return arrays.reduce(function(a, b) {
+      flatten: function (arrays) {
+        return arrays.reduce(function (a, b) {
           return a.concat(b);
         }, []);
       },
-      unique: function(array) {
-        return array.reduce(function(result, item) {
+      unique: function (array) {
+        return array.reduce(function (result, item) {
           if (result.indexOf(item) === -1) {
             result.push(item);
           }
           return result;
         }, []);
       },
-      makeArray: function(arrayLike) {
+      makeArray: function (arrayLike) {
         return Array.prototype.slice.call(arrayLike);
       },
     },
-    toggleStrikeThrough: function(event) {
-      var target = event.target;
+    toggleStrikeThrough: function (event) {
+      const target = event.target;
       if (target.tagName === "LI") {
         target.classList.toggle("strike-through");
       }
     },
-    showCards: function(cards) {
-      cards.forEach(function(card) {
+    showCards: function (cards) {
+      cards.forEach(function (card) {
         card.classList.remove("hidden");
       });
     },
-    hideCards: function(cards) {
-      cards.forEach(function(card) {
+    hideCards: function (cards) {
+      cards.forEach(function (card) {
         card.classList.add("hidden");
       });
     },
-    getRecipeCardCategories: function(card) {
-      var categoriesUl = card.querySelector(".categories");
-      var lis = this.helpers.makeArray(categoriesUl.children);
-      return lis.map(function(li) {
+    getRecipeCardCategories: function (card) {
+      const categoriesUl = card.querySelector(".categories");
+      const lis = this.helpers.makeArray(categoriesUl.children);
+      return lis.map(function (li) {
         return li.textContent;
       });
     },
-    filterByCategory: function(event) {
-      var select = document.getElementById("filterCategorySelect");
-      var category = select.value;
-      var cardsArray = this.helpers.makeArray(this.cards);
+    filterByCategory: function (event) {
+      const select = document.getElementById("filterCategorySelect");
+      const category = select.value;
+      const cardsArray = this.helpers.makeArray(this.cards);
 
-      var toKeep = [];
-      var toRemove = [];
-      cardsArray.forEach(function(card) {
-        var currentCats = this.getRecipeCardCategories(card);
-        var selectUncategorized = category === "Uncategorized";
-        var hasNoCats = currentCats.length === 0;
-        var hasCat = currentCats.indexOf(category) !== -1;
-        var noFilter = category === "---";
+      const toKeep = [];
+      const toRemove = [];
+      cardsArray.forEach(function (card) {
+        const currentCats = this.getRecipeCardCategories(card);
+        const selectUncategorized = category === "Uncategorized";
+        const hasNoCats = currentCats.length === 0;
+        const hasCat = currentCats.indexOf(category) !== -1;
+        const noFilter = category === "---";
         if (noFilter || selectUncategorized && hasNoCats || hasCat) {
           toKeep.push(card);
         } else {
@@ -64,21 +64,21 @@ document.addEventListener("DOMContentLoaded", function() {
       this.hideCards(toRemove);
       this.showCards(toKeep);
     },
-    resetCategoryFilter: function(event) {
-      var cardsArray = this.helpers.makeArray(this.cards);
-      cardsArray.forEach(function(card) {
+    resetCategoryFilter: function (event) {
+      const cardsArray = this.helpers.makeArray(this.cards);
+      cardsArray.forEach(function (card) {
         card.classList.remove("hidden")
       });
     },
-    populateFilterByCategory: function() {
-      var cardsArray = this.helpers.makeArray(this.cards);
+    populateFilterByCategory: function () {
+      const cardsArray = this.helpers.makeArray(this.cards);
 
       // array of arrays of categories for each card
-      var allCardsCategories = cardsArray.map(this.getRecipeCardCategories.bind(this));
+      let allCardsCategories = cardsArray.map(this.getRecipeCardCategories.bind(this));
       // flatten to 1 level
       allCardsCategories = this.helpers.flatten(allCardsCategories);
       // collect unique categories
-      var uniqueCategories = this.helpers.unique(allCardsCategories);
+      const uniqueCategories = this.helpers.unique(allCardsCategories);
       // sort alphabetically
       uniqueCategories.sort();
       // add "Uncategorized" to list to enable filtering by recipes that
@@ -88,47 +88,63 @@ document.addEventListener("DOMContentLoaded", function() {
       uniqueCategories.unshift("---");
 
       // construct options and add the select element
-      var select = document.getElementById("filterCategorySelect");
+      const select = document.getElementById("filterCategorySelect");
       this.addOptions(select, uniqueCategories);
     },
-    addOptions: function(select, options) {
-      var optionsHTML = options.map(function(option) {
+    addOptions: function (select, options) {
+      const optionsHTML = options.map(function (option) {
         return '<option value="' + option + '">' + option + '</option>';
       });
 
       select.innerHTML = optionsHTML.join("\n");
     },
-    toggleFilterDrawer: function(e) {
+    toggleFilterDrawer: function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var toggleBtn = e.currentTarget;
-      var filtersDrawer = document.querySelector(".filters");
+      const toggleBtn = e.currentTarget;
+      const filtersDrawer = document.querySelector(".filters");
       filtersDrawer.classList.toggle("reveal");
     },
-    showConfirmModal: function(e) {
+    showConfirmModal: function (e) {
       e.preventDefault();
-      var $modalDivs = $(e.currentTarget).siblings('.modal, .modal-overlay');
+      const $modalDivs = $(e.currentTarget).siblings('.modal, .modal-overlay');
       $modalDivs.fadeIn(400);
     },
-    hideConfirmModal: function(e) {
+    hideConfirmModal: function (e) {
       e.preventDefault();
-      var $modalDivs = $(e.currentTarget).closest('.modal').add('.modal-overlay');
+      const $modalDivs = $(e.currentTarget).closest('.modal').add('.modal-overlay');
       $modalDivs.fadeOut(400);
     },
-    bindEvents: function() {
-      var filtersDrawerBtn = document.querySelector(".drawer_toggle");
+    readURL: function (e) {
+      const input = e.target
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          $(input.dataset.for)
+            .attr('src', event.target.result);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    },
+    bindEvents: function () {
+      const filtersDrawerBtn = document.querySelector(".drawer_toggle");
       if (filtersDrawerBtn) {
         filtersDrawerBtn.addEventListener("click", this.toggleFilterDrawer.bind(this));
       }
 
       $('.modal').siblings('a.destroy').on('click', this.showConfirmModal.bind(this));
       $('.modal a.cancel').on('click', this.hideConfirmModal.bind(this));
+      $('input[type="file"]').on('change', this.readURL)
     },
-    init: function() {
+    init: function () {
       this.steps = document.querySelector(".steps");
       this.ingredients = document.querySelector(".ingredients");
       this.cardList = document.querySelector(".card-list");
-      if (this.cardList) { this.cards = this.cardList.children; }
+      if (this.cardList) {
+        this.cards = this.cardList.children;
+      }
       this.sortCardList = document.getElementById("sortCardList");
       this.filterByCategoryResetBtn = document.getElementById("filterByCategoryResetBtn");
 
@@ -146,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // }
 
       // Feature: filter recipe cards by category
-      var select = document.getElementById("filterCategorySelect");
+      const select = document.getElementById("filterCategorySelect");
       if (select && this.cardList) {
         select.addEventListener("change", this.filterByCategory.bind(this))
         this.populateFilterByCategory();
@@ -159,7 +175,9 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       this.bindEvents();
-    }
+
+      $('input[type="file"]').change(this.readURL).trigger('change')
+    },
   }
 
   App.init();

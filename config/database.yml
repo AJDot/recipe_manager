@@ -1,0 +1,22 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: recipe_manager
+  pool: 2
+  username: alexhenegar
+  password: Il2ep!!!
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: recipe_manager_clean
+  pool: 2
+  username: alexhenegar
+  password: Il2ep!!!
+production:
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  host: <%= ENV['DATABASE_HOST'] %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USER'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>

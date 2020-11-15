@@ -1,65 +1,31 @@
-require 'pry'
-require_relative 'cooktime'
+require_relative 'category'
+require_relative 'ethnicity'
+require_relative 'step'
+require_relative 'ingredient'
+require_relative 'image'
 
-class Recipe
-  attr_reader :id, :name, :description, :cook_time, :ingredients,
-              :ethnicities, :steps, :notes, :img_filename
-  attr_writer :categories, :img_filename
+class Recipe < ActiveRecord::Base
+  has_and_belongs_to_many :categories, join_table: 'recipes_categories'
+  has_and_belongs_to_many :ethnicities, join_table: 'recipes_ethnicities'
+  has_many :steps, dependent: :destroy
+  has_many :ingredients, dependent: :destroy
+  has_one :image, dependent: :destroy
 
-  def initialize(data)
-    @id = data[:recipe_id]
-    @name = data[:name]
-    @description = data[:description]
-    @cook_time = CookTime.new(data[:cook_time])
-    @ingredients = data[:ingredients]
-    @categories = data[:categories]
-    @ethnicities = data[:ethnicities]
-    @steps = data[:steps]
-    @notes = data[:notes]
-    @img_filename = data[:img_filename]
-  end
+  validates :name,
+            uniqueness: {message: 'must be unique'},
+            length: {minimum: 1, maximum: 100, message: 'must be between 1 and 100 characters'}
+  validates :cook_time, with: :cook_time_validator
 
-  def ==(other)
-    @id == other.id
-  end
-
-  def ethnicities
-    if block_given?
-      @ethnicities.each { |eth| yield eth }
-    else
-      @ethnicities
+  def cook_time_validator
+    hours, minutes = cook_interval.hours, cook_interval.minutes
+    if [hours, minutes].any? { |duration| duration.empty? }
+      errors[:cook_time] << 'entries must be 0 or greater.'
+    elsif !(0..59).cover? minutes.to_i
+      errors[:cook_time] << 'minutes must be between 0 and 59.'
     end
   end
 
-  def categories
-    if block_given?
-      @categories.each { |cat| yield cat }
-    else
-      @categories
-    end
-  end
-
-  def ingredients
-    if block_given?
-      @ingredients.each { |ing| yield ing }
-    else
-      @ingredients
-    end
-  end
-
-  def steps
-    if block_given?
-      @steps.each { |step| yield step }
-    else
-      @steps
-    end
-  end
-
-  def notes
-    if block_given?
-      @notes.each { |note| yield note }
-    else
-      @notes
-    end
+  def cook_interval
+    CookTime.new(cook_time)
   end
 end

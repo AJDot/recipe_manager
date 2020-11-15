@@ -8,7 +8,8 @@ class CookTime
     # strip off seconds and leading zeros
     # turn into HH:MM format (hours may be > 99)
     hh_mm = /\A0*(\d*):0*(\d*)/
-    @interval, @hours, @minutes = interval.match(hh_mm)[0..2]
+    match = interval.match(hh_mm)
+    @interval, @hours, @minutes = match ? match[0..2] : ['00:00', '0', '0']
     @hours = '0' if hours.empty?
     @minutes = '0' if minutes.empty?
   end
@@ -28,5 +29,10 @@ class CookTime
     elsif other.instance_of? CookTime
       interval == other.interval
     end
+  end
+
+  def blank?
+    non_zero = /[1-9]+/
+    !hours.match?(non_zero) && !minutes.match(non_zero)
   end
 end

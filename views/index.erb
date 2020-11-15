@@ -25,16 +25,16 @@
           <article>
             <h1><%= recipe.name %></h1>
             <section>
-              <% if recipe.img_filename %>
-                <img src="../images/<%= recipe.img_filename %>" alt="<%= recipe.name %>" />
+              <% if recipe.image %>
+                <img src="../images/<%= recipe.image.recipe_filename %>" alt="<%= recipe.name %>" />
               <% else %>
                 <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
               <% end %>
               <div class="content">
                 <a class="view-recipe" href="/recipe/<%= recipe.id %>"><i class="material-icons">receipt</i>View Recipe</a>
                 <ul class="categories">
-                  <% recipe.categories do |category| %>
-                    <li><%= category[:name] %></li>
+                  <% recipe.categories.each do |category| %>
+                    <li><%= category.name %></li>
                   <% end %>
                 </ul>
                 <p><%= recipe.description %></p>
