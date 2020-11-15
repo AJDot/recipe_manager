@@ -40,7 +40,7 @@ class Image < ActiveRecord::Base
   end
 
   def destroy_image
-    FileUtils.rm(file_path)
+    FileUtils.rm(file_path) if File.exist?(file_path)
   end
 
   def ext_name

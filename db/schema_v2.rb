@@ -48,9 +48,9 @@ ActiveRecord::Schema.define(version: 2020_11_15_012105) do
     t.text "note"
   end
 
-  create_table "recipes_categories", id: false, force: :cascade do |t|
-    t.bigint "category_id", null: false
-    t.bigint "recipe_id", null: false
+  create_table "recipes_categories", force: :cascade do |t|
+    t.bigint "recipe_id"
+    t.bigint "category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_recipes_categories_on_category_id"
@@ -68,7 +68,7 @@ ActiveRecord::Schema.define(version: 2020_11_15_012105) do
 
   create_table "steps", force: :cascade do |t|
     t.bigint "recipe_id"
-    t.text "description", null: false
+    t.string "description", limit: 100, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipe_id"], name: "index_steps_on_recipe_id"
