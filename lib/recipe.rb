@@ -2,14 +2,15 @@ require_relative 'category'
 require_relative 'ethnicity'
 require_relative 'step'
 require_relative 'ingredient'
-require_relative 'image'
+require_relative 'uploaders/recipe_image_uploader'
 
 class Recipe < ActiveRecord::Base
   has_and_belongs_to_many :categories, join_table: 'recipes_categories'
   has_and_belongs_to_many :ethnicities, join_table: 'recipes_ethnicities'
   has_many :steps, dependent: :destroy
   has_many :ingredients, dependent: :destroy
-  has_one :image, dependent: :destroy
+
+  mount_uploader :image, RecipeImageUploader
 
   validates :name,
             uniqueness: {message: 'must be unique'},

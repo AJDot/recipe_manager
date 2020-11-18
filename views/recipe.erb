@@ -17,8 +17,8 @@
 
 <article class="recipe">
   <header>
-    <% if @recipe.image %>
-      <img src="/images/<%= @recipe.image.recipe_filename %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" />
+    <% if @recipe.image.url.present? %>
+      <img src="<%= @recipe.image.url %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" />
     <% else %>
       <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='#' />
     <% end %>

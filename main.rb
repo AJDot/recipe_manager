@@ -1,3 +1,5 @@
+require_relative 'config/initializers/dotenv'
+require_relative 'config/initializers/carrierwave'
 require 'sinatra'
 require 'sinatra/content_for'
 require 'sinatra/activerecord'
@@ -56,6 +58,7 @@ def get_recipe_form_data(params)
     description: params[:description],
     cook_time: hh_mm_to_cook_time(params[:hours], params[:minutes]),
     note: params[:note],
+    image: params[:image],
   }
 end
 
@@ -111,7 +114,6 @@ helpers do
     add_recipe_ethnicities(recipe, process_detail(params[:ethnicities]))
     add_recipe_steps(recipe, process_detail(params[:steps]))
     add_recipe_ingredients(recipe, process_detail(params[:ingredients]))
-    add_recipe_image(recipe, params[:image])
   end
 
   def add_categories(cat_names)
@@ -156,7 +158,7 @@ helpers do
 
   def add_recipe_image(recipe, image_params)
     return if image_params.nil?
-    recipe.image = add_image(image_params)
+    recipe.image = image_params
   end
 end
 

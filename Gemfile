@@ -18,6 +18,10 @@ gem 'pry'
 gem 'minitest'
 gem 'minitest-reporters'
 
+gem 'dotenv'
+gem 'fog-aws'
+gem 'carrierwave'
+
 group :development, :test do
   gem 'awesome_print'
 end

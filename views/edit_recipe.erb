@@ -37,8 +37,8 @@
     <dt>
       <% if params[:image] %>
         <img src="#" alt="<%= params[:image][:filename] %>" title="<%= params[:image][:filename] %>" id="image" />
-      <% elsif @recipe.image %>
-        <img src="/images/<%= @recipe.image.recipe_filename %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" id="image" />
+      <% elsif @recipe.image.url %>
+        <img src="<%= @recipe.image.url %>" alt="<%= @recipe.name %>" title="<%= @recipe.name %>" id="image" />
       <% else %>
         <img class="img-placeholder" src="/icons/image_placeholder.svg" alt='Upload an Image' id="image" />
       <% end %>

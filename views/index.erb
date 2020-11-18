@@ -25,8 +25,8 @@
           <article>
             <h1><%= recipe.name %></h1>
             <section>
-              <% if recipe.image %>
-                <img src="../images/<%= recipe.image.recipe_filename %>" alt="<%= recipe.name %>" />
+              <% if recipe.image.url.present? %>
+                <img src="<%= recipe.image.url %>" alt="<%= recipe.name %>" />
               <% else %>
                 <img class="img-placeholder" src="../icons/image_placeholder.svg" alt='#' />
               <% end %>
