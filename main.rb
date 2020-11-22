@@ -6,13 +6,11 @@ require 'sinatra/activerecord'
 require 'tilt/erubis'
 require 'pry'
 
-require_relative './database_persistence'
 require_relative 'lib/cook_time'
 require_relative 'lib/recipe'
 require_relative 'lib/core_ext/object'
 
 ################################################################################
-                  # TODO: Create Recipe class? - continue doing this
 # TODO: 5 row max height on ethnicities, categories, description
 # TODO: remove transition time for resizing textareas
 # TODO: Add oven_temp to database
@@ -35,17 +33,10 @@ end
 
 configure(:development) do
   require 'sinatra/reloader'
-  also_reload 'database_persistence.rb'
   also_reload 'lib/**/*'
 end
 
-before do
-  @storage = DatabasePersistence.new(logger)
-end
 
-after do
-  @storage.disconnect
-end
 
 def save_image(filename, file_location)
   file_destination = File.join(data_path, 'images', filename)
