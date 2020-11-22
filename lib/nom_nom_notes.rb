@@ -1,4 +1,4 @@
-module RecipeManager
+module NomNomNotes
   extend self
 
   def data_path

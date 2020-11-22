@@ -1,6 +1,6 @@
 require 'csv'
 
-module RecipeManager
+module NomNomNotes
   class MigrationV2
     def run
       backup_path = 'db/backups/v1/csv'

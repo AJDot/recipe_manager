@@ -7,7 +7,7 @@ namespace :db do
   namespace :migrate do
     task :v2 do
       require_relative './bin/migrate_from_v1'
-      migration = RecipeManager::MigrationV2.new
+      migration = NomNomNotes::MigrationV2.new
       migration.run
     end
   end

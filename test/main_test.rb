@@ -15,7 +15,7 @@ Dir[File.join(Sinatra::Application.root, 'test/factories/**/*.rb')].each { |f| r
 DatabaseCleaner.strategy = :transaction
 DatabaseCleaner.clean_with(:truncation)
 
-class RecipeManagerTest < Minitest::Test
+class NomNomNotesTest < Minitest::Test
   include Rack::Test::Methods
 
   def app

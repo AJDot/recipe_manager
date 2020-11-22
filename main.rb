@@ -11,6 +11,7 @@ require_relative 'lib/cook_time'
 require_relative 'lib/recipe'
 require_relative 'lib/core_ext/object'
 require_relative 'lib/authentication'
+require_relative 'lib/concerns/contextable'
 require_relative 'lib/user'
 
 ################################################################################
@@ -83,6 +84,7 @@ def load_recipe(id)
 end
 
 helpers Authentication
+helpers Contextable
 helpers do
   def redirect_to_original_request
     flash[:success] = "Welcome back #{current_user.email}."
@@ -169,6 +171,14 @@ helpers do
     return if image_params.nil?
     recipe.image = image_params
   end
+end
+
+before '*' do
+  with_context(app: {
+    header: {
+      title: 'Nom Nom Notes'
+    }
+  })
 end
 
 # View recipe cards

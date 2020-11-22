@@ -56,6 +56,8 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 48px;
   margin-bottom: 10px;
+  min-height: 36px;
+  min-width: 36px;
 }
 
 h2 {
@@ -122,6 +124,28 @@ input[type="submit"].btn {
   width: 100%;
   padding: 10px 0;
   margin: 20px 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/*
+*************************
+  LOGO
+*************************
+*/
+.app-header .logo-n3 {
+  height: 48px;
+  width: 48px;
+  vertical-align: top;
 }
 
 /*
