@@ -324,10 +324,10 @@ class RecipeManagerTest < Minitest::Test
     sign_in(create_user)
     get '/recipe/1'
     assert_equal 302, last_response.status
-    assert_equal 'The specified recipe was not found.', session[:error]
+    assert_equal 'The specified recipe was not found.', session['flash'][:error]
 
     get '/recipe/1/edit'
     assert_equal 302, last_response.status
-    assert_equal 'The specified recipe was not found.', session[:error]
+    assert_equal 'The specified recipe was not found.', session['flash'][:error]
   end
 end

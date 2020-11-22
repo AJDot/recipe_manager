@@ -15,23 +15,11 @@
 
 <%== erb :app_header, layout: false %>
 
-<% if session[:error] %>
-  <div class="flash error">
-    <% Array.wrap(session.delete(:error)).each do |e| %>
+<% flash.keys.each do |type| %>
+  <div class="flash <%= type %>">
+    <% Array.wrap(flash[type]).each do |e| %>
       <p><%= e %></p>
     <% end %>
-  </div>
-<% end %>
-
-<% if session[:notice] %>
-  <div class="flash notice">
-    <p><%= session.delete(:notice) %></p>
-  </div>
-<% end %>
-
-<% if session[:success] %>
-  <div class="flash success">
-    <p><%= session.delete(:success) %></p>
   </div>
 <% end %>
 

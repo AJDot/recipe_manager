@@ -2,6 +2,7 @@ require_relative 'config/initializers/dotenv'
 require_relative 'config/initializers/carrierwave'
 require 'sinatra'
 require 'sinatra/content_for'
+require 'sinatra/flash'
 require 'sinatra/activerecord'
 require 'tilt/erubis'
 require 'pry'
@@ -75,7 +76,7 @@ def load_recipe(id)
   recipe = Recipe.find_by(id: id)
   return recipe unless recipe.nil?
 
-  session[:error] = "The specified recipe was not found."
+  flash[:error] = "The specified recipe was not found."
   status 422
   redirect "/"
   halt
@@ -84,7 +85,7 @@ end
 helpers Authentication
 helpers do
   def redirect_to_original_request
-    session[:success] = "Welcome back #{current_user.email}."
+    flash[:success] = "Welcome back #{current_user.email}."
     original_request = session[:original_request]
     session[:original_request] = nil
     redirect original_request
@@ -179,7 +180,7 @@ end
 
 get '/sign_in/?' do
   if current_user?
-    session[:notice] = 'Already signed in.'
+    flash[:notice] = 'Already signed in.'
     redirect '/'
   end
   erb :sign_in, locals: {title: 'Sign In'}
@@ -191,14 +192,14 @@ post '/sign_in/?' do
     self.current_user = user
     redirect_to_original_request
   else
-    session[:error] = 'You could not be signed in. Did you enter the correct email and password?'
+    flash.now[:error] = 'You could not be signed in. Did you enter the correct email and password?'
     erb :sign_in, locals: {title: 'Sign In'}
   end
 end
 
 get '/sign_out' do
   self.current_user = nil
-  session[:success] = 'You have been signed out.'
+  flash[:success] = 'You have been signed out.'
   redirect '/'
 end
 
@@ -210,10 +211,10 @@ post '/sign_up' do
   user = User.new(params.slice('email', 'password', 'password_confirmation'))
   if user.save
     self.current_user = user
-    session[:success] = "Welcome #{current_user.email}."
+    flash[:success] = "Welcome #{current_user.email}."
     redirect '/'
   else
-    session[:error] = user.errors.full_messages
+    flash.now[:error] = user.errors.full_messages
     erb :sign_up, locals: {title: 'Sign Up'}
   end
 end
@@ -245,9 +246,9 @@ post '/recipe/:id/destroy' do
   @recipe_id = params[:id].to_i
   recipe = load_recipe(params[:id])
   if recipe.destroy
-    session[:success] = "#{recipe.name} was successfully deleted."
+    flash[:success] = "#{recipe.name} was successfully deleted."
   else
-    session[:error] = "Unable to destroy #{recipe.name}."
+    flash[:error] = "Unable to destroy #{recipe.name}."
   end
   redirect '/'
 end
@@ -260,10 +261,10 @@ post '/recipe/create' do
   @recipe = Recipe.new(@new_data)
   if @recipe.save
     add_details(@recipe, params)
-    session[:success] = "#{@new_data[:name]} was successfully created."
+    flash[:success] = "#{@new_data[:name]} was successfully created."
     redirect "recipe/#{@recipe.id}"
   else
-    session[:error] = @recipe.errors.full_messages
+    flash.now[:error] = @recipe.errors.full_messages
     status 422
     erb :create_recipe, layout: :layout
   end
@@ -278,10 +279,10 @@ post '/recipe/:id' do
   @recipe = load_recipe(params[:id])
   if @recipe.update(@new_data)
     add_details(@recipe, params)
-    session[:success] = "#{@recipe.name} was successfully updated."
+    flash[:success] = "#{@recipe.name} was successfully updated."
     redirect "/recipe/#{@recipe.id}"
   else
-    session[:error] = @recipe.errors.full_messages
+    flash.now[:error] = @recipe.errors.full_messages
     status 422
     erb :edit_recipe, layout: :layout
   end
