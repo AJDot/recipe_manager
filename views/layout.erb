@@ -8,20 +8,24 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
         rel="stylesheet"
   >
-  <link rel="stylesheet" href="/stylesheets/main.css" />
+  <link rel="stylesheet" href="/stylesheets/index.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-<header>
-  <h1><a href="/">Recipe Manager</a></h1>
-  <div class="header-links"><%== yield_content :header_links %></div>
-</header>
+
+<%== erb :app_header, layout: false %>
 
 <% if session[:error] %>
   <div class="flash error">
     <% Array.wrap(session.delete(:error)).each do |e| %>
       <p><%= e %></p>
     <% end %>
+  </div>
+<% end %>
+
+<% if session[:notice] %>
+  <div class="flash notice">
+    <p><%= session.delete(:notice) %></p>
   </div>
 <% end %>
 

@@ -1,0 +1,70 @@
+header {
+  font-family: 'Josefin Slab', serif;
+}
+
+header a:hover {
+  color: inherit;
+}
+
+.primary-header {
+  padding: 10px 20px;
+  margin: 0;
+}
+
+.primary-header.row {
+  justify-content: space-between
+}
+
+.secondary-header {
+  padding: 0 20px;
+  margin: 0;
+}
+
+.header-links ul {
+  font-size: 36px;
+}
+
+.header-links li {
+  display: inline;
+}
+
+.header-links a,
+.header-links a:hover {
+  font-weight: normal;
+  color: inherit;
+}
+
+.header-links input[type="submit"] {
+  color: inherit;
+  background: inherit;
+}
+
+.header-links .safe,
+.header-links .destroy,
+.header-links .cancel {
+  transition: border-bottom .3s ease, text-indent .5s ease .5s;
+  border-bottom: 3px solid transparent;
+}
+
+.header-links a:hover .safe,
+.header-links a:hover .destroy,
+.header-links a:hover .cancel {
+  transition: border-bottom .3s ease .5s, text-indent .5s ease;
+}
+
+.header-links a:hover .safe {
+  border-bottom-color: #44dd9f;
+}
+
+.header-links a:hover .destroy {
+  border-bottom-color: #ff834e;
+}
+
+.header-links a:hover .cancel {
+  border-bottom-color: #4d9ad9;
+}
+
+.header-links form {
+  display: inline-block;
+}
+

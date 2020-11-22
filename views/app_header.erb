@@ -1,0 +1,27 @@
+<header class="app-header">
+  <div class="primary-header row">
+    <h1 class="col"><a href="/">Recipe Manager</a></h1>
+    <ul class="col suffix s-200-em horizontal j-slash">
+      <% if current_user.blank? %>
+        <% if request.path_info != '/sign_in' %>
+          <li>
+            <a href="/sign_in">Sign In</a>
+          </li>
+        <% end %>
+        <% if request.path_info != '/sign_up' %>
+          <li>
+            <a href="/sign_up">Sign Up</a>
+          </li>
+        <% end %>
+      <% end %>
+      <% if current_user.present? %>
+        <li>
+          <a href="/sign_out">Sign Out</a>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="secondary-header">
+    <div class="header-links"><%== yield_content :header_links %></div>
+  </div>
+</header>

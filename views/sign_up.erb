@@ -1,0 +1,22 @@
+<form class="sign_up" action="/sign_up" method="post">
+  <h2>Sign Up</h2>
+  <dl class="email">
+    <dt><label for="email">Email</label></dt>
+    <dd>
+      <input type="text" name="email" id="email" value="<%= params[:email] %>" />
+    </dd>
+  </dl>
+  <dl class="password">
+    <dt><label for="password">Password</label></dt>
+    <dd>
+      <input type="password" name="password" id="password" />
+    </dd>
+  </dl>
+  <dl class="password">
+    <dt><label for="password_confirmation">Confirm Password</label></dt>
+    <dd>
+      <input type="password" name="password_confirmation" id="password_confirmation" />
+    </dd>
+  </dl>
+  <input class="btn" type="submit" value="Sign Up" />
+</form>

@@ -1,5 +1,3 @@
-@import url("whitespace-reset.css");
-
 /*
   COLORS
 **********************
@@ -13,6 +11,13 @@
   #44dd9f;
   ORANGE
   #ffb54e;
+
+  FONTS
+**********************
+  San-Serif
+  Raleway
+  Serif
+  Josefin Slab
 */
 
 body {
@@ -59,15 +64,9 @@ h2 {
   margin: 0 0 20px 0;
 }
 
-header, main {
+main {
   padding: 20px;
   margin: 0;
-  /*border: 1px solid black;
-  box-sizing: border-box;*/
-}
-
-header a:hover {
-  color: inherit;
 }
 
 main::after {
@@ -112,7 +111,8 @@ input[type="submit"] {
 }
 
 .btn:hover,
-.btn :hover {
+.btn :hover,
+.btn:focus {
   color: #000000;
   background: #44dd9f;
 }
@@ -122,54 +122,6 @@ input[type="submit"].btn {
   width: 100%;
   padding: 10px 0;
   margin: 20px 0;
-}
-
-.header-links ul {
-  font-size: 36px;
-}
-
-.header-links li {
-  display: inline;
-}
-
-.header-links a,
-.header-links a:hover {
-  font-weight: normal;
-  color: inherit;
-}
-
-.header-links input[type="submit"] {
-  color: inherit;
-  background: inherit;
-}
-
-.header-links .safe,
-.header-links .destroy,
-.header-links .cancel {
-  transition: border-bottom .3s ease, text-indent .5s ease .5s;
-  border-bottom: 3px solid transparent;
-}
-
-.header-links a:hover .safe,
-.header-links a:hover .destroy,
-.header-links a:hover .cancel {
-  transition: border-bottom .3s ease .5s, text-indent .5s ease;
-}
-
-.header-links a:hover .safe {
-  border-bottom-color: #44dd9f;
-}
-
-.header-links a:hover .destroy {
-  border-bottom-color: #ff834e;
-}
-
-.header-links a:hover .cancel {
-  border-bottom-color: #4d9ad9;
-}
-
-.header-links form {
-  display: inline-block;
 }
 
 /*
@@ -246,6 +198,7 @@ label {
 
 input[type="text"],
 input[type="number"],
+input[type="password"],
 select,
 textarea {
   font: inherit;
@@ -271,15 +224,18 @@ textarea {
 
 input[type="text"]:hover,
 input[type="number"]:hover,
+input[type="password"]:hover,
 select:hover,
 textarea:hover,
 input[type="text"]:focus,
 input[type="number"]:focus,
+input[type="password"]:focus,
 select:focus,
 textarea:focus {
   background: #f8f8f8;
   box-shadow: 0 0 1px 0 #333333;
 }
+
 /*
 *************************
   RECIPE CARDS
@@ -445,6 +401,7 @@ ul.card-list .content p {
 }
 
 .recipe header {
+  font-family: 'Raleway', Helvetica, Arial, sans-serif;
   min-height: 200px;
   padding: 0;
   margin-bottom: 50px;
@@ -626,6 +583,7 @@ dl.description::before {
   display: block;
   clear: both;
 }
+
 /*
 *************************
   FLASH MESSAGES
@@ -691,7 +649,6 @@ dl.description::before {
   border-bottom-color: #4d9ad9;
 }
 
-
 /*
 *************************
   ICONS WITH SLIDE-IN TEXT
@@ -753,3 +710,44 @@ dl.description::before {
     transform: rotate(0);
   }
 }
+
+/*
+*************************
+  SIZES
+*************************
+*/
+
+.s-90-em {
+  font-size: 0.9em;
+}
+
+.s-200-em {
+  font-size: 2em;
+}
+
+/*
+*************************
+  SIGN IN FORM
+*************************
+*/
+
+form.sign_in,
+form.sign_up {
+  max-width: 480px;
+  margin: 0 auto 2em;
+}
+
+/*
+*************************
+  OTHER
+*************************
+*/
+
+ul.horizontal > li {
+  display: inline-block;
+}
+
+.j-slash > * + *:before {
+  content: '/';
+}
+

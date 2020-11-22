@@ -33,6 +33,8 @@ GEM
     dotenv (2.7.6)
     erubis (2.7.0)
     excon (0.78.0)
+    factory_bot (6.1.0)
+      activesupport (>= 5.0.0)
     ffi (1.13.1)
     fog-aws (3.6.7)
       fog-core (~> 2.1)
@@ -118,6 +120,7 @@ DEPENDENCIES
   database_cleaner
   dotenv
   erubis
+  factory_bot
   fog-aws
   minitest
   minitest-reporters

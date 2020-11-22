@@ -9,6 +9,8 @@ require 'pry'
 require_relative 'lib/cook_time'
 require_relative 'lib/recipe'
 require_relative 'lib/core_ext/object'
+require_relative 'lib/authentication'
+require_relative 'lib/user'
 
 ################################################################################
 # TODO: 5 row max height on ethnicities, categories, description
@@ -29,14 +31,22 @@ configure do
   enable :sessions
   set :session_secret, 'secret'
   set :erb, :escape_html => true
+  set :public_folder, "#{__dir__}/public"
 end
 
 configure(:development) do
   require 'sinatra/reloader'
   also_reload 'lib/**/*'
+  set :static_cache_control, :no_cache
 end
 
+configure(:test) do
+  set :static_cache_control, :no_cache
+end
 
+configure(:production) do
+  set :static_cache_control, [:public, max_age: 1.year.to_i]
+end
 
 def save_image(filename, file_location)
   file_destination = File.join(data_path, 'images', filename)
@@ -71,7 +81,14 @@ def load_recipe(id)
   halt
 end
 
+helpers Authentication
 helpers do
+  def redirect_to_original_request
+    session[:success] = "Welcome back #{current_user.email}."
+    original_request = session[:original_request]
+    session[:original_request] = nil
+    redirect original_request
+  end
 
   # Gather values of key from each hash in an array of hashes
   def pluck(array, key)
@@ -155,12 +172,55 @@ end
 
 # View recipe cards
 get '/' do
+  authenticate!
   @recipes = Recipe.all
   erb :index, layout: :layout
 end
 
+get '/sign_in/?' do
+  if current_user?
+    session[:notice] = 'Already signed in.'
+    redirect '/'
+  end
+  erb :sign_in, locals: {title: 'Sign In'}
+end
+
+post '/sign_in/?' do
+  user = User.authenticate(params)
+  if user.present?
+    self.current_user = user
+    redirect_to_original_request
+  else
+    session[:error] = 'You could not be signed in. Did you enter the correct email and password?'
+    erb :sign_in, locals: {title: 'Sign In'}
+  end
+end
+
+get '/sign_out' do
+  self.current_user = nil
+  session[:success] = 'You have been signed out.'
+  redirect '/'
+end
+
+get '/sign_up/?' do
+  erb :sign_up, locals: {title: 'Sign Up'}
+end
+
+post '/sign_up' do
+  user = User.new(params.slice('email', 'password', 'password_confirmation'))
+  if user.save
+    self.current_user = user
+    session[:success] = "Welcome #{current_user.email}."
+    redirect '/'
+  else
+    session[:error] = user.errors.full_messages
+    erb :sign_up, locals: {title: 'Sign Up'}
+  end
+end
+
 # View create recipe form
 get '/recipe/create' do
+  authenticate!
   erb :create_recipe, layout: :layout
 end
 
@@ -173,6 +233,7 @@ end
 
 # View edit recipe form
 get '/recipe/:id/edit' do
+  authenticate!
   @recipe_id = params[:id].to_i
   @recipe = load_recipe(@recipe_id)
   erb :edit_recipe, layout: :layout
@@ -180,6 +241,7 @@ end
 
 # Delete recipe
 post '/recipe/:id/destroy' do
+  authenticate!
   @recipe_id = params[:id].to_i
   recipe = load_recipe(params[:id])
   if recipe.destroy
@@ -192,6 +254,7 @@ end
 
 # Create new recipe
 post '/recipe/create' do
+  authenticate!
   @new_data = get_recipe_form_data(params)
 
   @recipe = Recipe.new(@new_data)
@@ -208,6 +271,7 @@ end
 
 # Edit recipe
 post '/recipe/:id' do
+  authenticate!
   @recipe_id = params[:id].to_i
   @new_data = get_recipe_form_data(params)
 

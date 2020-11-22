@@ -9,6 +9,8 @@ Minitest::Reporters.use!
 require './config/environment'
 require 'database_cleaner'
 require_relative '../main.rb'
+Dir[File.join(Sinatra::Application.root, 'test/support/**/*.rb')].each { |f| require f }
+Dir[File.join(Sinatra::Application.root, 'test/factories/**/*.rb')].each { |f| require f }
 
 DatabaseCleaner.strategy = :transaction
 DatabaseCleaner.clean_with(:truncation)
@@ -32,6 +34,20 @@ class RecipeManagerTest < Minitest::Test
     last_request.env["rack.session"]
   end
 
+  def sign_in(user)
+    env 'rack.session', {user_id: user.id.to_s}
+  end
+
+  def create_user(attrs = {})
+    create :user, :default, attrs
+  end
+
+  def must_be_signed_in(type, path, body = {})
+    send(type, path, body)
+    assert_equal 302, last_response.status
+    assert_includes last_response.location, '/sign_in'
+  end
+
   def test_view_recipe_cards
     test_cat_name = 'Category 1'
     recipe_data = {
@@ -42,6 +58,9 @@ class RecipeManagerTest < Minitest::Test
       ]
     }
     Recipe.create(recipe_data)
+
+    must_be_signed_in(:get, "/", recipe_data)
+    sign_in(create_user)
 
     get '/'
 
@@ -166,6 +185,9 @@ class RecipeManagerTest < Minitest::Test
       note: "n1\\r\\nn2",
     }
 
+    must_be_signed_in(:post, "/recipe/create", recipe_data)
+    sign_in(create_user)
+
     post "/recipe/create", recipe_data
     assert_equal 302, last_response.status
 
@@ -199,6 +221,9 @@ class RecipeManagerTest < Minitest::Test
       cook_time: '00:00',
     }
 
+    must_be_signed_in(:post, "/recipe/create", recipe_data)
+    sign_in(create_user)
+
     post '/recipe/create', recipe_data
     assert_equal 302, last_response.status
     post '/recipe/create', recipe_data
@@ -208,6 +233,8 @@ class RecipeManagerTest < Minitest::Test
 
   def test_create_recipe_name_size_error
     recipe_data = {name: ''}
+    must_be_signed_in(:post, "/recipe/create", recipe_data)
+    sign_in(create_user)
 
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
@@ -216,6 +243,9 @@ class RecipeManagerTest < Minitest::Test
 
   def test_create_recipe_minutes_out_of_range_cook_time_error
     recipe_data = {name: 'Test Recipe 1', hours: '1', minutes: '75'}
+
+    must_be_signed_in(:post, "/recipe/create")
+    sign_in(create_user)
 
     post '/recipe/create', recipe_data
     assert_equal 422, last_response.status
@@ -243,10 +273,12 @@ class RecipeManagerTest < Minitest::Test
     }
     recipe = Recipe.create(recipe_data)
 
-    post "/recipe/#{recipe.id}", params
-    assert_equal 302, last_response.status
+    must_be_signed_in(:post, "/recipe/#{recipe.id}", params)
 
-    get last_response["Location"]
+    sign_in(create_user)
+    post "/recipe/#{recipe.id}", params
+    follow_redirect!
+
     assert_equal 200, last_response.status
     assert_includes last_response.body, params[:name]
     assert_includes last_response.body, params[:description]
@@ -277,16 +309,19 @@ class RecipeManagerTest < Minitest::Test
     recipe = Recipe.create(recipe_data)
     recipe.save(validate: false)
 
-    post "/recipe/#{recipe.id}/destroy", {}
-    assert_equal 302, last_response.status
+    must_be_signed_in(:post, "/recipe/#{recipe.id}/destroy", {})
 
-    get last_response["Location"]
+    sign_in(create_user)
+    post "/recipe/#{recipe.id}/destroy", {}
+    follow_redirect!
+
     assert_equal 200, last_response.status
     refute_includes last_response.body, "#{recipe_data[:name]}</h2>"
     assert_includes last_response.body, "#{recipe_data[:name]} was successfully deleted."
   end
 
   def test_load_recipe_when_id_not_found
+    sign_in(create_user)
     get '/recipe/1'
     assert_equal 302, last_response.status
     assert_equal 'The specified recipe was not found.', session[:error]

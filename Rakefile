@@ -1,6 +1,5 @@
 require 'sinatra/activerecord'
 require 'sinatra/activerecord/rake'
-require './main'
 require 'rake/testtask'
 
 namespace :db do
@@ -12,4 +11,11 @@ namespace :db do
       migration.run
     end
   end
+end
+
+Rake::TestTask.new do |t|
+  require 'dotenv/load'
+  t.name = :test
+  t.pattern = "test/**/*_test.rb"
+  t.warning = true
 end
