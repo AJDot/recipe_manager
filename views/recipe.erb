@@ -6,12 +6,14 @@
         <span class="safe">Recipe Cards</span>
       </a>
     </li>
-    <li>
-      <a href="/recipe/<%= @recipe_id %>/edit">
-        <i class="material-icons wiggle">edit</i>
-        <span class="safe">Edit Recipe</span>
-      </a>
-    </li>
+    <% if current_user? %>
+      <li>
+        <a href="/recipe/<%= @recipe_id %>/edit">
+          <i class="material-icons wiggle">edit</i>
+          <span class="safe">Edit Recipe</span>
+        </a>
+      </li>
+    <% end %>
   </ul>
 <% end %>
 
