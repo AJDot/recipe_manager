@@ -183,7 +183,6 @@ end
 
 # View recipe cards
 get '/' do
-  authenticate!
   @recipes = Recipe.all
   erb :index, layout: :layout
 end
